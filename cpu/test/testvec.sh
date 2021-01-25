@@ -6,8 +6,11 @@
 set TOPDIR = "../.."
 set COMMONDIR = "${TOPDIR}/common"
 set CPUDIR = "${TOPDIR}/cpu"
+set CPURTLDIR = "${TOPDIR}/cpu/rtl"
 set CPUTESTDIR = "${CPUDIR}/test"
 set CPUGATEDIR = "${CPUDIR}/syn/result"
+set PMDIR = "${TOPDIR}/pm"
+set PMRTLDIR = "${PMDIR}/rtl"
 set INCLUDE = ( \
 	+incdir+${COMMONDIR}/ \
 	+incdir+${CPUDIR}/include \
@@ -78,7 +81,8 @@ endsw
 ########################################
 #     Simulation Target Selection      #
 ########################################
-set DEFAULT_DESIGN = "pri_enc"
+set DEFAULT_DESIGN = "btb"
+#set DEFAULT_DESIGN = "br_pred_cnt"
 
 if ( $# =~ 0 ) then
 	set TOP_MODULE = $DEFAULT_DESIGN
@@ -87,7 +91,7 @@ else
 endif
 
 switch ( $TOP_MODULE )
-	case "pri_enc" :
+	case "btb" :
 		set TEST_FILE = "${TOP_MODULE}_test.sv"
 		if ( $GATE =~ 1 ) then
 			set RTL_FILE = ( \
@@ -96,7 +100,7 @@ switch ( $TOP_MODULE )
 			)
 		else
 			set RTL_FILE = ( \
-				${RTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
 			)
 		endif
 	breaksw

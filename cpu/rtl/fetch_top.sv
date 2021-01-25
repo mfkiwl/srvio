@@ -28,4 +28,12 @@ module fetch_top #(
 	output wire [ADDR-1:0]	fetch_pc
 );
 
+	fetch_pc_sel #(
+	) fetch_pc_sel (
+	);
+
+	fetch_iag #(
+	) fetch_iag (
+	);
+
 endmodule

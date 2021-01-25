@@ -7,9 +7,8 @@
 * https://opensource.org/licenses/mit-license.php
 */
 
-`include "stddef.h"
+`include "stddef.vh"
 `include "cpu_config.h"
-`include "reset_config.h"
 
 module br_pred_cnt #(
 	parameter ADDR = `AddrWidth,
@@ -121,7 +120,7 @@ module br_pred_cnt #(
 	/* history buffer */
 	wire [SIMBRCOM-1:0]	dummy_v;
 	wire				dummy_busy;
-	fifo_mRnW #(
+	fifo #(
 		.DATA		( HISTORY ),
 		.DEPTH		( PRED_D ),
 		.BUF_EXT	( `Disable ),
@@ -172,12 +171,8 @@ module br_pred_cnt #(
 
 	/***** Sequential logics *****/
 	integer i;
-`ifdef SYNC_RESET
-	always @( posedge clk ) begin
-`else
-	always @( posedge clk or `RESET_EDGE reset_ ) begin
-`endif
-		if ( reset_ == `RESET_ACT ) begin
+	always @( posedge clk or negedge reset_ ) begin
+		if ( reset_ == `Enable_ ) begin
 			reg_pred <= {SIMBRF{`Disable_}};
 			for ( i = 0; i < PRT_D; i = i + 1 ) begin
 				cnt[i] <= CNT_DEF;
@@ -185,8 +180,6 @@ module br_pred_cnt #(
 		end else begin
 			reg_pred <= pred_taken_wire;
 			for ( i = 0; i < PRT_D; i = i + 1 ) begin
-				//cnt[i] 
-					//<= update_cnt(i, cnt[i], br_commit_, taken, tr_idx_conc);
 				cnt[i] <= update_cnt(i, cnt[i], 
 							br_commit_, br_taken_, tr_idx_conc);
 			end
