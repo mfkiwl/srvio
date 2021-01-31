@@ -13,14 +13,17 @@ module btb_test;
 	reg						clk;
 	reg						reset_;
 	/* prediction */
-	reg [FETCH*ADDR-1:0]	btb_addr;
-	wire [FETCH-1:0]		target_valid;
-	wire [FETCH*ADDR-1:0]	target_addr;
+	reg [ADDR-1:0]			pc;
+	wire					btb_hit;
+	wire [ADDR-1:0]			btb_addr;
 	/* train */
-	reg [SIMBRCOM-1:0]		pc_chg_com_;
-	reg [SIMBRCOM-1:0]		chg_taken_;
-	reg [SIMBRCOM*ADDR-1:0]	com_addr;
-	reg [SIMBRCOM*ADDR-1:0]	com_tar_addr;
+	reg						br_commit_;
+	reg						br_taken_;
+	reg						br_miss_;
+	reg						jump_commit_;
+	reg						jump_miss_;
+	reg [ADDR-1:0]			com_addr;
+	reg [ADDR-1:0]			com_tar_addr;
 
 	btb #(
 		.ADDR			( ADDR ),
@@ -39,33 +42,45 @@ module btb_test;
 		end
 	endtask
 
-	task set_pc;
-		input [31:0]		num;
+	task set_br_commit;
 		input [ADDR-1:0]	pc;
+		input [ADDR-1:0]	target;
+		input				taken_;
+		input				miss_;
 		begin
-			btb_addr[`RangeF(num,ADDR)] = pc;
+			com_addr = pc;
+			com_tar_addr = target;
+			br_commit_ = `Enable_;
+			br_taken_ = taken_;
+			br_miss_ = miss_;
+			#(STEP);
+			reset_commit;
 		end
 	endtask
 
-	task set_commit;
-		input [31:0]		num;
-		input				taken;
+	task set_jump_commit;
 		input [ADDR-1:0]	pc;
 		input [ADDR-1:0]	target;
+		input				miss_;
 		begin
-			pc_chg_com_[num] = `Enable_;
-			chg_taken_[num] = !taken;
-			com_addr[`RangeF(num,ADDR)] = pc;
-			com_tar_addr[`RangeF(num,ADDR)] = target;
+			com_addr = pc;
+			com_tar_addr = target;
+			jump_commit_ = `Enable_;
+			jump_miss_ = miss_;
+			#(STEP);
+			reset_commit;
 		end
 	endtask
 
 	task reset_commit;
 		begin
-			pc_chg_com_ <= {SIMBRCOM{`Disable_}};
-			chg_taken_ <= {SIMBRCOM{`Disable_}};
-			com_addr <= {SIMBRCOM*ADDR{1'b0}};
-			com_tar_addr <= {SIMBRCOM*ADDR{1'b0}};
+			br_commit_ = `Disable_;
+			br_taken_ = `Disable_;
+			br_miss_ = `Disable_;
+			jump_commit_ = `Disable_;
+			jump_miss_ = `Disable_;
+			com_addr = {ADDR{1'b0}};
+			com_tar_addr = {ADDR{1'b0}};
 		end
 	endtask
 
@@ -76,23 +91,27 @@ module btb_test;
 	initial begin
 		clk <= `Low;
 		reset_ <= `Enable_;
-		btb_addr <= {ADDR{1'b0}};
-		pc_chg_com_ <= {SIMBRCOM{`Disable_}};
-		chg_taken_ <= {SIMBRCOM{`Disable_}};
-		com_addr <= {SIMBRCOM*ADDR{1'b0}};
-		com_tar_addr <= {SIMBRCOM*ADDR{1'b0}};
+		pc <= {ADDR{1'b0}};
+		br_commit_ <= `Disable_;
+		br_taken_ <= `Disable_;
+		br_miss_ <= `Disable_;
+		jump_commit_ <= `Disable_;
+		jump_miss_ <= `Disable_;
+		com_addr <= {ADDR{1'b0}};
+		com_tar_addr <= {ADDR{1'b0}};
 		#(STEP);
 		reset_ <= `Disable_;
+
 		#(STEP*5);
 		/* training check */
-		set_commit(0, `Enable, 32'hdeadbe74, 32'hcafecafe);
-		#(STEP);
-		reset_commit;
+		set_jump_commit(32'hdeadbe74, 32'hcafecafc, `Enable_);
 		#(STEP);
 
 		/* prediction check */
 		#(STEP*5);
-		set_pc(0, 32'hdeadbe74);
+		pc = 32'hdeadbe74;
+		#(STEP);
+		pc = 0;
 		dump_btb;
 		#(STEP);
 		$finish;
@@ -101,7 +120,7 @@ module btb_test;
 `ifdef SimVision
 	initial begin
 		$shm_open();
-		$shm_probe("ACF");
+		$shm_probe("ACFM");
 	end
 `endif
 

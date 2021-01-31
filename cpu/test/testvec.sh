@@ -119,9 +119,9 @@ endsw
 #        Simulation Tool Setup         #
 ########################################
 #set SIM_TOOL = "ncverilog"
-#set SIM_TOOL = "xmverilog"
+set SIM_TOOL = "xmverilog"
 #set SIM_TOOL = "vcs"
-set SIM_TOOL = "verilator"
+#set SIM_TOOL = "verilator"
 
 switch( $SIM_TOOL )
 	case "ncverilog" :
