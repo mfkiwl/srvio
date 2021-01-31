@@ -121,6 +121,7 @@ endsw
 #set SIM_TOOL = "ncverilog"
 #set SIM_TOOL = "xmverilog"
 #set SIM_TOOL = "vcs"
+set SIM_TOOL = "verilator"
 
 switch( $SIM_TOOL )
 	case "ncverilog" :
@@ -209,6 +210,39 @@ switch( $SIM_TOOL )
 			+libext+.v.sv \
 			+systemverilogext+.sv \
 			+verilog2001ext+.v \
+		)
+
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				+define+$def \
+				$DEFINES \
+			) 
+		end
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				+incdir+$dir \
+				$INCLUDE \
+			)
+		end
+	breaksw
+
+	case "verilator" :
+		# Just for syntax checking
+		set TEST_FILE = ()
+
+		if ( $Waves =~ 1 ) then
+			set WaveOpt = +define+VCD
+		endif
+
+		set SIM_OPT = ( \
+			-lint-only \
+			$WaveOpt \
+			+notimingchecks \
+		)
+
+		set SRC_EXT = ( \
+			+libext+.v.sv \
+			+systemverilogext+.sv \
 		)
 
 		foreach def ( $DEFINE_LIST )
