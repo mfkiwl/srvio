@@ -94,7 +94,6 @@ module btb_test;
 		#(STEP*5);
 		/* training check */
 		set_commit(0, `Enable, 32'hdeadbe74, 32'hcafecafe);
-		set_commit(1, `Enable, 32'hdeadbe18, 32'hfffecafe);
 		#(STEP);
 		reset_commit;
 		#(STEP);
@@ -102,9 +101,6 @@ module btb_test;
 		/* prediction check */
 		#(STEP*5);
 		set_pc(0, 32'hdeadbe74);
-		set_pc(1, 32'hdeadbe20);
-		set_pc(2, 32'hdeadbe10);
-		set_pc(3, 32'hdeadbe18);
 		dump_btb;
 		#(STEP);
 		$finish;
