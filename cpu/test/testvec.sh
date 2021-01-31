@@ -11,10 +11,11 @@ set CPUTESTDIR = "${CPUDIR}/test"
 set CPUGATEDIR = "${CPUDIR}/syn/result"
 set PMDIR = "${TOPDIR}/pm"
 set PMRTLDIR = "${PMDIR}/rtl"
-set INCLUDE = ( \
-	+incdir+${COMMONDIR}/ \
-	+incdir+${CPUDIR}/include \
+set INCDIR = ( \
+	${COMMONDIR}/ \
+	${CPUDIR}/include \
 )
+set INCLUDE = ()
 
 #############################################
 # Output Wave
@@ -139,6 +140,13 @@ switch( $SIM_TOOL )
 			+systemverilog_ext+.sv \
 			+vlog_ext+.v \
 		)
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				+incdir+$dir \
+				$INCLUDE \
+			)
+		end
 	breaksw
 
 	case "xmverilog" :
@@ -157,6 +165,13 @@ switch( $SIM_TOOL )
 			+systemverilog_ext+.sv \
 			+vlog_ext+.v \
 		)
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				+incdir+$dir \
+				$INCLUDE \
+			)
+		end
 	breaksw
 
 	case "vcs" :
@@ -177,11 +192,25 @@ switch( $SIM_TOOL )
 			+systemverilogext+.sv \
 			+verilog2001ext+.v \
 		)
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				+incdir+$dir \
+				$INCLUDE \
+			)
+		end
 	breaksw
 
 	case "iverilog" :
 		set SIM_OPT = ()
 		set SRC_EXT = ()
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				-I $dir \
+				$INCLUDE \
+			)
+		end
 	breaksw
 
 	default :
