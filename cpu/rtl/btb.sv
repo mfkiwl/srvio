@@ -55,18 +55,13 @@ module btb #(
 	wire [BTB_TAG-1:0]				pred_tag;
 	wire [CNT-1:0]					pred_cnt;
 	wire							tag_match;
-	wire							entry_confident;
+	wire							entry_valid;
 	//*** training
 	wire [BTB_ADDR-1:0]				com_idx;
 	wire [BTB_TAG-1:0]				com_tag;
 	wire [CNT-1:0]					com_cnt;
 	wire							com_tag_match;
 	wire							com_confident;
-	//wire [BTB_TAG*SIMBRCOM-1:0]	tr_tag;
-	//wire [BTB_ADDR*SIMBRCOM-1:0]	tr_idx;
-	//wire [ADDR-1:0]				next_addr_buf [BTB_D-1:0];
-	//wire [BTB_TAG-1:0]			next_tag [BTB_D-1:0];
-	//wire [CNT-1:0]				next_cnt [BTB_D-1:0];
 
 	//***** combinational cells 
 	logic							buf_we_;
@@ -77,7 +72,7 @@ module btb #(
 
 	//***** output assign
 	assign btb_addr = addr_buf[btb_idx];
-	assign btb_hit = tag_match && entry_confident;
+	assign btb_hit = tag_match && entry_valid;
 
 
 
@@ -88,7 +83,7 @@ module btb #(
 	assign pred_tag = tag[btb_idx];
 	assign tag_match = ( in_pc_tag == pred_tag );
 	assign pred_cnt = cnt[btb_idx];
-	assign entry_confident = pred_cnt[CNT-1];
+	assign entry_valid = ( pred_cnt != CNT_MIN );
 	//*** table update
 	assign com_idx = com_addr[BTB_ADDR+INST_OFS-1:INST_OFS];
 	assign com_tag = com_addr[ADDR-1:BTB_ADDR+INST_OFS];
@@ -130,7 +125,7 @@ module btb #(
 					{`Enable_, `Enable_ } : begin
 						// conservatively replace entry,
 						//		if old entry is unconfident
-						next_cnt = CNT_MIN;
+						next_cnt = CNT_MIN + 1'b1;
 						cnt_we_ = com_confident;
 						buf_we_ = com_confident;
 					end
@@ -168,11 +163,11 @@ module btb #(
 				cnt[i] = {CNT{1'b0}};
 			end
 		end else begin
-			if ( buf_we_ ) begin
+			if ( buf_we_ == `Enable_ ) begin
 				addr_buf[com_idx] <= com_tar_addr;
 				tag[com_idx] <= com_tag;
 			end
-			if ( cnt_we_ ) begin
+			if ( cnt_we_ == `Enable_ ) begin
 				cnt[com_idx] <= next_cnt;
 			end
 		end
