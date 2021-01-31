@@ -106,9 +106,9 @@ module btb #(
 				// when a commited branch is tracked
 				buf_we_ = `Disable_;
 				cnt_we_ = `Enable_;
-				case ( br_taken_, br_miss_ )
+				case ( { br_taken_, br_miss_ } )
 					{`Enable_, `Disable_} : begin
-						next_cnt = CNT_MAX:
+						next_cnt = CNT_MAX;
 						cnt_we_ = `Enable_;
 					end
 					{`Enable_, `Enable_ } : begin
@@ -121,9 +121,9 @@ module btb #(
 				endcase
 			end else begin
 				// when a commited branch is not tracked
-				case ( br_taken_, br_miss_ )
+				case ( { br_taken_, br_miss_ } )
 					{`Enable_, `Disable_} : begin
-						next_cnt = CNT_MAX:
+						next_cnt = CNT_MAX;
 						cnt_we_ = `Enable_;
 						buf_we_ = `Enable_;
 					end
@@ -132,7 +132,7 @@ module btb #(
 						//		if old entry is unconfident
 						next_cnt = CNT_MIN;
 						cnt_we_ = com_confident;
-						buf_we_ = com_confidnet;
+						buf_we_ = com_confident;
 					end
 					default : begin
 						next_cnt = {CNT{1'b0}};
