@@ -76,7 +76,7 @@ module btb #(
 
 
 	//***** output assign
-	assign target_addr = addr_buf[btb_idx];
+	assign btb_addr = addr_buf[btb_idx];
 	assign btb_hit = tag_match && entry_confident;
 
 
@@ -163,9 +163,9 @@ module btb #(
 		int i;
 		if ( reset_ == `Enable_ ) begin
 			for ( i = 0; i < BTB_D; i = i + 1 ) begin
-				addr_buf[i] <= {BTB_TAG{1'b0}};
-				tag[i] <= {BTB_TAG{1'b0}};
-				cnt[i] <= {CNT{1'b0}};
+				addr_buf[i] = {ADDR{1'b0}};
+				tag[i] = {BTB_TAG{1'b0}};
+				cnt[i] = {CNT{1'b0}};
 			end
 		end else begin
 			if ( buf_we_ ) begin
