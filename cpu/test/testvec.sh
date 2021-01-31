@@ -16,6 +16,7 @@ set INCDIR = ( \
 	${CPUDIR}/include \
 )
 set INCLUDE = ()
+set DEFINES = ()
 
 #############################################
 # Output Wave
@@ -26,7 +27,7 @@ set WaveOpt
 #############################################
 # Defines
 #############################################
-set DEFINES = ()
+set DEFINE_LIST = ()
 
 #############################################
 #           Gate Level Simulation           #
@@ -34,20 +35,20 @@ set DEFINES = ()
 #set GATE = 1
 set GATE = 0
 if ( $GATE =~ 1 ) then
-	set DEFINES = ($DEFINES +define+NETLIST)
+	set DEFINE_LIST = ($DEFINE_LIST +define+NETLIST)
 endif
 
 #############################################
 #              Process Setting              #
 #############################################
-set Process = "ASAP7"
-#set Process = "None"
+#set Process = "ASAP7"
+set Process = "None"
 
 switch ($Process)
 	case "ASAP7" :
 		set CELL_LIB = "./ASAP7_PDKandLIB_v1p6/lib_release_191006"
 		set CELL_RTL_DIR = "${CELL_LIB}/asap7_7p5t_library/rev25/Verilog"
-		set DEFINES = (${DEFINES} +define+ASAP7)
+		set DEFINE_LIST = (${DEFINE_LIST} +define+ASAP7)
 
 		set RTL_FILE = ( \
 			-v $CELL_RTL_DIR/asap7sc7p5t_AO_RVT_TT_08302018.v \
@@ -118,9 +119,8 @@ endsw
 #        Simulation Tool Setup         #
 ########################################
 #set SIM_TOOL = "ncverilog"
-set SIM_TOOL = "xmverilog"
+#set SIM_TOOL = "xmverilog"
 #set SIM_TOOL = "vcs"
-#set SIM_TOOL = "iverilog"
 
 switch( $SIM_TOOL )
 	case "ncverilog" :
@@ -133,6 +133,8 @@ switch( $SIM_TOOL )
 			+nc64bit \
 			$WaveOpt \
 			+access+r \
+			+notimingchecks \
+			-ALLOWREDEFINITION \
 		)
 		set SRC_EXT = ( \
 			+xmc_ext+.c \
@@ -141,6 +143,12 @@ switch( $SIM_TOOL )
 			+vlog_ext+.v \
 		)
 
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				+define+$def \
+				$DEFINES \
+			) 
+		end
 		foreach dir ( $INCDIR )
 			set INCLUDE = ( \
 				+incdir+$dir \
@@ -158,6 +166,8 @@ switch( $SIM_TOOL )
 			+64bit \
 			$WaveOpt \
 			+access+r \
+			+notimingchecks \
+			-ALLOWREDEFINITION \
 		)
 		set SRC_EXT = ( \
 			+xmc_ext+.c \
@@ -166,6 +176,12 @@ switch( $SIM_TOOL )
 			+vlog_ext+.v \
 		)
 
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				+define+$def \
+				$DEFINES \
+			) 
+		end
 		foreach dir ( $INCDIR )
 			set INCLUDE = ( \
 				+incdir+$dir \
@@ -185,6 +201,8 @@ switch( $SIM_TOOL )
 			$WaveOpt \
 			+incdir+.include \
 			-debug_access+r \
+			+notimingchecks \
+			-ALLOWREDEFINITION \
 		)
 		set SRC_EXT = ( \
 			+xmc_ext+.c \
@@ -193,21 +211,15 @@ switch( $SIM_TOOL )
 			+verilog2001ext+.v \
 		)
 
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				+define+$def \
+				$DEFINES \
+			) 
+		end
 		foreach dir ( $INCDIR )
 			set INCLUDE = ( \
 				+incdir+$dir \
-				$INCLUDE \
-			)
-		end
-	breaksw
-
-	case "iverilog" :
-		set SIM_OPT = ()
-		set SRC_EXT = ()
-
-		foreach dir ( $INCDIR )
-			set INCLUDE = ( \
-				-I $dir \
 				$INCLUDE \
 			)
 		end
@@ -226,8 +238,6 @@ endsw
 ${SIM_TOOL} \
 	${SIM_OPT} \
 	${SRC_EXT} \
-	+notimingchecks \
-	-ALLOWREDEFINITION \
 	${INCLUDE} \
 	${DEFINES} \
 	${TEST_FILE} \
