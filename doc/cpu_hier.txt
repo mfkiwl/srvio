@@ -1,0 +1,9 @@
+CPU Hierarcy
+# モジュール内のサブモジュールについては表記していません。
+# 配置配線などの際は注意してください
+
+- cpu_top
+	- cpu_core
+		- cpu_pipeline
+			- fetch_top
+			- decode_top
