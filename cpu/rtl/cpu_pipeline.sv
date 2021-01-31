@@ -18,4 +18,16 @@ module cpu_pipeline #(
 
 );
 
+	fetch_top #(
+	) fetch_top (
+		.clk			( clk ),
+		.reset_			( reset_ ),
+	);
+
+	decode_top #(
+	) decode_top (
+		.clk			( clk ),
+		.reset_			( reset_ ),
+	);
+
 endmodule

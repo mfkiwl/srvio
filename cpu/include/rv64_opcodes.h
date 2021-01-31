@@ -1,13 +1,12 @@
 /*
--- ============================================================================
--- FILE     : rv64_opcodes.h
---			: 64bit risc-v instrcution sets
---			: format and different other than rv32 is describted
--- ----------------------------------------------------------------------------
--- Revision  Date		Coding_by	Comment
--- 1.0.0     2019/12/5	ide			create new
--- ============================================================================
+* <rv64_opcodes.svh>
+* 
+* Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
+* 
+* This software is released under the MIT License.
+* https://opensource.org/licenses/mit-license.php
 */
+
 `ifndef _RV64_OPCODES_H_INCLUDED_
 `define _RV64_OPCODES_H_INCLUDED_
 

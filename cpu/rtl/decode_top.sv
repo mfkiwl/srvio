@@ -1,5 +1,5 @@
 /*
-* <cpu_core.sv>
+* <decode_top.sv>
 * 
 * Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
 * 
@@ -9,18 +9,12 @@
 
 `include "stddef.vh"
 `include "cpu_config.vh"
+`include "decode.svh"
 
-module cpu_core #(
+module decode_top #(
 )(
-	input wire			clk,
-	input wire			reset_,
+	input wire				clk,
+	input wire				reset_
 );
-
-	cpu_pipeline #(
-	) cpu_pipeline (
-		.clk		( clk ),
-		.reset_		( reset_ )
-	);
-
 
 endmodule

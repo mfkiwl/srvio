@@ -1,20 +1,14 @@
 /*
--- ============================================================================
--- FILE     : datapath.h
---			: general information about datapath
--- ----------------------------------------------------------------------------
--- Revision  Date		Coding_by	Comment
--- 1.0.0     2019/3/23	ide			create new
--- ============================================================================
+* <datapath.svh>
+* 
+* Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
+* 
+* This software is released under the MIT License.
+* https://opensource.org/licenses/mit-license.php
 */
 
-`ifndef _DEC_H_INCLUDED_
-`define _DEC_H_INCLUDED_
-
-/***** Extended Register Width *****/
-`define ExtRegWidth		(`RV_REGW+1)	// reg + enable
-`define ExtRegBus		`ExtRegWidth-1:0
-
+`ifndef _DATAPATH_SVH_INCLUDED_
+`define _DATAPATH_SVH_INCLUDED_
 
 /***** CPU funtion unit configuration *****/
 `define UnitWidth			3					// number of units
@@ -26,11 +20,9 @@
 `define UnitFpu				`UnitWidth'b100		// fpu
 `define UnitCfpu			`UnitWidth'b101		// fp divider
 `define UnitBranch			`UnitWidth'b110		// branch unit
-//`define UnitMemory			`UnitWidth'b1000		// memory unit is renamed as AGU
-
 
 /***** CPU operation code *****/
 `define OpeWidth			10						// operation
 `define OpeBus				`OpeWidth-1:0
 
-`endif
+`endif // _DATAPATH_SVH_INCLUDED_
