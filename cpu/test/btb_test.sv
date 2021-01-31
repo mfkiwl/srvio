@@ -26,15 +26,7 @@ module btb_test;
 		.ADDR			( ADDR ),
 		.BTB_D			( BTB_D )
 	) btb (
-		.clk			( clk ),
-		.reset_			( reset_ ),
-		.btb_addr		( btb_addr ),
-		.target_valid	( target_valid ),
-		.target_addr	( target_addr ),
-		.pc_chg_com_	( pc_chg_com_ ),
-		.chg_taken_		( chg_taken_ ),
-		.com_addr		( com_addr ),
-		.com_tar_addr	( com_tar_addr )
+		.*
 	);
 
 	task dump_btb;
