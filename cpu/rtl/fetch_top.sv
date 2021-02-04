@@ -8,32 +8,38 @@
 */
 
 `include "stddef.vh"
-`include "cpu_config.vh"
-`include "fetch.svh"
+`include "cpu_config.svh"
+`include "cpu_if.svh"
 
 module fetch_top #(
 	parameter ADDR = `AddrWidth,
-	parameter DATA = `DataWidth
+	parameter INST = `InstWidth
 )(
 	input wire				clk,
 	input wire				reset_,
 
-	// Fetch Instruction from I-Cache
-	input wire				ic_e_,
-	output wire [ADDR-1:0]	ic_pc,
-	output wire [DATA-1:0]	ic_inst,
+	ICacheFetchIf			fetch_ic_if
+	//ICacheFetchIf #(
+	//	.ADDR	( ADDR ),
+	//	.INST	( INST )
+	//)						fetch_ic_if
 
-	// Fetch request to I-Cache
-	output wire				fetch_e_,
-	output wire [ADDR-1:0]	fetch_pc
+	// Fetch Instruction from I-Cache
+	//input wire				ic_e_,
+	//input wire [ADDR-1:0]	ic_pc,
+	//input wire [INST-1:0]	ic_inst,
+
+	//// Fetch request to I-Cache
+	//output wire				fetch_e_,
+	//output wire [ADDR-1:0]	fetch_pc
 );
 
-	fetch_pc_sel #(
-	) fetch_pc_sel (
-	);
+	//fetch_pc_sel #(
+	//) fetch_pc_sel (
+	//);
 
-	fetch_iag #(
-	) fetch_iag (
-	);
+	//fetch_iag #(
+	//) fetch_iag (
+	//);
 
 endmodule

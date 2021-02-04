@@ -8,7 +8,7 @@
 */
 
 `include "stddef.vh"
-`include "cpu_config.vh"
+`include "cpu_config.svh"
 
 module btb #(
 	parameter ADDR = `AddrWidth,

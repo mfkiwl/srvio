@@ -1,5 +1,5 @@
 /*
-* <decode_top.sv>
+* <decoder.sv>
 * 
 * Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
 * 
@@ -8,19 +8,10 @@
 */
 
 `include "stddef.vh"
-`include "cpu_config.svh"
+`include "cpu_config.vh"
 `include "decode.svh"
 
-module decode_top #(
+module decoder  #(
 )(
-	input wire				clk,
-	input wire				reset_,
-
-	output Decode_t			dec_out
+	output Decode_t		dec_out
 );
-
-	decoder #(
-	) decoder (
-	);
-
-endmodule

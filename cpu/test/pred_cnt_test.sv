@@ -38,6 +38,7 @@ module pred_cnt_test;
 		.busy			( busy )
 	);
 
+`ifndef VERILATOR
 	always #(STEP/2) begin
 		clk <= ~clk;
 	end
@@ -92,11 +93,12 @@ module pred_cnt_test;
 		$finish();
 	end
 
-`ifdef SimVision
+ `ifdef SimVision
 	initial begin
 		$shm_open();
 		$shm_probe("AC");
 	end
+ `endif
 `endif
 
 endmodule

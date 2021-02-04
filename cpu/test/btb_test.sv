@@ -1,5 +1,5 @@
 `include "stddef.vh"
-`include "cpu_config.vh"
+`include "cpu_config.cvh"
 
 module btb_test;
 	parameter STEP = 10;

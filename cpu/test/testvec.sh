@@ -86,6 +86,7 @@ endsw
 #set DEFAULT_DESIGN = "btb"
 set DEFAULT_DESIGN = "decode_top"
 #set DEFAULT_DESIGN = "br_pred_cnt"
+#set DEFAULT_DESIGN = "fetch_top"
 
 if ( $# =~ 0 ) then
 	set TOP_MODULE = $DEFAULT_DESIGN
@@ -109,6 +110,20 @@ switch ( $TOP_MODULE )
 	breaksw
 
 	case "decode_top" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+			)
+		endif
+	breaksw
+
+	case "fetch_top"
 		set TEST_FILE = "${TOP_MODULE}_test.sv"
 		if ( $GATE =~ 1 ) then
 			set RTL_FILE = ( \
@@ -240,9 +255,6 @@ switch( $SIM_TOOL )
 	breaksw
 
 	case "verilator" :
-		# Just for syntax checking
-		set TEST_FILE = ()
-
 		if ( $Waves =~ 1 ) then
 			set WaveOpt = +define+VCD
 		endif
@@ -256,6 +268,9 @@ switch( $SIM_TOOL )
 		set SRC_EXT = ( \
 			+libext+.v.sv \
 			+systemverilogext+.sv \
+		)
+
+		set DEFINE_LIST = ( \
 		)
 
 		foreach def ( $DEFINE_LIST )
