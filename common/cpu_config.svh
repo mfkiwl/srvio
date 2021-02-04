@@ -17,9 +17,9 @@
 `define CPU64		1
 
 //*** CPU ISA
-`define ISA_MIPS		0					// MIPS
-`define ISA_RV			1					// RISC-V
-`define CPU_ISA			`ISA_RV				// ISA select (*)
+`define ISA_MIPS		0						// MIPS
+`define ISA_RV			1						// RISC-V
+`define CPU_ISA			`ISA_RV					// ISA select (*)
 
 
 //***** CPU Databus Configuration
@@ -74,5 +74,9 @@
 `define GprWidth		`DataWidth				// Bit width of GPR (32entry)
 `define FprDepth		32						// num of FPR
 `define FprWidth		`DoubleBitWidth			// Bit width of FPR (32entry)
+
+
+
+//***** Packing to Struct
 
 `endif //_CPU_CONFIG_H_INCLUDED_
