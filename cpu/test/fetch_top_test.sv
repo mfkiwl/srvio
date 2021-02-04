@@ -22,7 +22,12 @@ module fetch_top_test;
 	ICacheFetchIf #(
 		.ADDR			( ADDR ),
 		.INST			( INST )
-	) fetch_ic_if ();
+	) fetch_ic_if();
+
+	FetchDecIf #(
+		.ADDR			( ADDR ),
+		.INST			( INST )
+	) fetch_dec_if();
 	
 	fetch_top #(
 		.ADDR			( ADDR ),
@@ -30,17 +35,21 @@ module fetch_top_test;
 	) fetch_top (
 		.clk			( clk ),
 		.reset_			( reset_ ),
-		.fetch_ic_if	( fetch_ic_if.fetch )
+		.fetch_ic_if	( fetch_ic_if.fetch ),
+		.fetch_dec_if	( fetch_dec_if.fetch )
 	);
 
 `ifndef VERILATOR
-	always @( STEP/2 ) begin
+	always #( STEP/2 ) begin
 		clk <= ~clk;
 	end
 
 	initial begin
-		clk <= `Low;
+		clk = `Low;
 		reset_ <= `Enable_;
+
+		#(STEP*5);
+		$finish;
 	end
 
  `ifdef SimVision

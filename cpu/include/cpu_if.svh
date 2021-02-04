@@ -27,7 +27,16 @@ interface ICacheFetchIf #(
 	logic				fetch_e_;
 	logic [ADDR-1:0]	fetch_pc;
 
-	//***** 
+	//***** Instruction Cache side signals
+	modport icache(
+		input	fetch_e_,
+		input	fetch_pc,
+		output	ic_e_,
+		output 	ic_pc,
+		output 	ic_inst
+	);
+
+	//***** Fetch Stage side signals
 	modport fetch(
 		input	ic_e_,
 		input 	ic_pc,
@@ -36,20 +45,45 @@ interface ICacheFetchIf #(
 		output	fetch_pc
 	);
 
-	modport icache(
-		input	fetch_e_,
-		input	fetch_pc,
-		output	ic_e_,
-		output 	ic_pc,
-		output 	ic_inst
-	);
 endinterface : ICacheFetchIf
 
 
 
-//***** Fetch and Decode Interface
-interface FetchDecodeIf #(
+// Fetch and Decode Interface
+interface FetchDecIf #(
+	parameter ADDR = `AddrWidth,
+	parameter INST = `InstWidth
 );
+
+	//***** Fetch to Decode Stage
+	logic				inst_e_;
+	logic [ADDR-1:0]	inst_pc;
+	logic [INST-1:0]	inst;
+
+	//***** Decode to Fetch Stage
+	logic				dec_jump_;
+	logic				dec_branch_;
+	logic [ADDR-1:0]	dec_target;
+
+	//***** Fetch Stage side signals
+	modport fetch (
+		input	dec_jump_,
+		input	dec_branch_,
+		input	dec_target,
+		output	inst_e_,
+		output	inst_pc,
+		output	inst
+	);
+
+	//***** Decode Stage side signals
+	modport decode (
+		input	inst_e_,
+		input	inst_pc,
+		input	inst,
+		output	dec_jump_,
+		output	dec_branch_,
+		output	dec_target
+	);
 
 endinterface : FetchDecodeIf
 
