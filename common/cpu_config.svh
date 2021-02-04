@@ -75,14 +75,4 @@
 `define FprDepth		32						// num of FPR
 `define FprWidth		`DoubleBitWidth			// Bit width of FPR (32entry)
 
-
-
-/***** Execution Unit Configuration *****/
-// TODO: Under construction 
-//`define NumALU			1						// # of ALU (*)
-//`define NumCINT			1						// # of Integer divide Unit (*)
-//`define NumFPU			1						// # of FPU (*)
-//`define NumCFPU			1						// # of FP divide Unit (*)
-//`define NumAGU			1						// # of Address Generation Unit (*)
-
 `endif //_CPU_CONFIG_H_INCLUDED_

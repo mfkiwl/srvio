@@ -11,11 +11,19 @@
 `define _DECODE_SVH_INCLUDED_
 
 //***** Functional Unit configuration
-typedef struct {
-};
+`define ExeUnitWidth	3
+`define ExeUnitBus		(`ExeUnitWidth-1):0
+typedef enum logic[`ExeUnitBus] {
+	ExeUnitALU  = 0,
+	ExeUnitDiv  = 1,
+	ExeUnitFPU  = 2,
+	ExeUnitFDiv = 3,
+	ExeUnitMem	= 4
+} ExeUnit_t;
 
 
 typedef struct {
+	ExeUnit_t	unit;
 } Decode_t;
 
 `endif //_DECODE_SVH_INCLUDED_

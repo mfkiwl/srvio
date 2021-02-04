@@ -83,7 +83,8 @@ endsw
 ########################################
 #     Simulation Target Selection      #
 ########################################
-set DEFAULT_DESIGN = "btb"
+#set DEFAULT_DESIGN = "btb"
+set DEFAULT_DESIGN = "decode_top"
 #set DEFAULT_DESIGN = "br_pred_cnt"
 
 if ( $# =~ 0 ) then
@@ -106,6 +107,21 @@ switch ( $TOP_MODULE )
 			)
 		endif
 	breaksw
+
+	case "decode_top" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+			)
+		endif
+	breaksw
+
 
 	default : 
 		# Error
