@@ -22,7 +22,7 @@ module fetch_top_test;
 	ICacheFetchIf #(
 		.ADDR			( ADDR ),
 		.INST			( INST )
-	) fetch_ic_if;
+	) fetch_ic_if ();
 	
 	fetch_top #(
 		.ADDR			( ADDR ),
@@ -42,6 +42,13 @@ module fetch_top_test;
 		clk <= `Low;
 		reset_ <= `Enable_;
 	end
+
+ `ifdef SimVision
+	initial begin
+		$shm_open();
+		$shm_probe("AC");
+	end
+ `endif
 `endif
 
 endmodule

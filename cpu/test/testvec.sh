@@ -84,9 +84,9 @@ endsw
 #     Simulation Target Selection      #
 ########################################
 #set DEFAULT_DESIGN = "btb"
-set DEFAULT_DESIGN = "decode_top"
+#set DEFAULT_DESIGN = "decode_top"
 #set DEFAULT_DESIGN = "br_pred_cnt"
-#set DEFAULT_DESIGN = "fetch_top"
+set DEFAULT_DESIGN = "fetch_top"
 
 if ( $# =~ 0 ) then
 	set TOP_MODULE = $DEFAULT_DESIGN
