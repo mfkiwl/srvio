@@ -69,14 +69,6 @@
 
 
 
-//***** CPU parameters
-`define GprDepth		32						// num of GPR
-`define GprWidth		`DataWidth				// Bit width of GPR (32entry)
-`define FprDepth		32						// num of FPR
-`define FprWidth		`DoubleBitWidth			// Bit width of FPR (32entry)
-
-
-
 //***** Packing to Struct
 
 `endif //_CPU_CONFIG_H_INCLUDED_

@@ -9,18 +9,30 @@
 
 `include "stddef.vh"
 `include "cpu_config.svh"
+`include "cpu_if.svh"
 `include "decode.svh"
 
 module decode_top #(
+	parameter ADDR = `AddrWidth,
+	parameter DATA = `DataWidth,
+	parameter INST = `InstWidth
 )(
 	input wire				clk,
 	input wire				reset_,
 
-	output Decode_t			dec_out
+	FetchDecIf.decode		fetch_dec_if
 );
 
+	//***** Simple RISC-V Decoder
 	decoder #(
+		.ADDR		( ADDR ),
+		.DATA		( DATA ),
+		.INST		( INST )
 	) decoder (
+		.clk		( clk ),
+		.reset_		( reset_ ),
 	);
+
+	//***** TODO: Add Complex Macro Decoder
 
 endmodule
