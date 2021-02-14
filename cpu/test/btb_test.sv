@@ -117,11 +117,6 @@ module btb_test;
 		$finish;
 	end
 
-`ifdef SimVision
-	initial begin
-		$shm_open();
-		$shm_probe("ACFM");
-	end
-`endif
+	`include "waves.vh"
 
 endmodule

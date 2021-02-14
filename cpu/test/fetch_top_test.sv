@@ -22,7 +22,7 @@ module fetch_top_test;
 	ICacheFetchIf #(
 		.ADDR			( ADDR ),
 		.INST			( INST )
-	) fetch_ic_if();
+	) ic_fetch_if();
 
 	FetchDecIf #(
 		.ADDR			( ADDR ),
@@ -35,7 +35,7 @@ module fetch_top_test;
 	) fetch_top (
 		.clk			( clk ),
 		.reset_			( reset_ ),
-		.fetch_ic_if	( fetch_ic_if.fetch ),
+		.ic_fetch_if	( ic_fetch_if.fetch ),
 		.fetch_dec_if	( fetch_dec_if.fetch )
 	);
 

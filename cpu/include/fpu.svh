@@ -1,30 +1,41 @@
 /*
- * $Id: fpu.h,v 1.7.6.1.2.1.2.4 2019/01/08 00:15:20 beppu Exp $
- *
- *  Header File for Floating Point Execution Unit
- *
- */
+* <fpu.svh>
+* 
+* Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
+* 
+* This software is released under the MIT License.
+* https://opensource.org/licenses/mit-license.php
+*/
 
-/***************** for dc shell ********************/
-`define DW_INCLUDE_IEEE754
-`define FPU_NO_PIPELINE
-/***************************************************/
+`ifndef _FPU_SVH_INCLUDED_
+`define _FPU_SVH_INCLUDED_
 
-`define EXEFPUNO           2        // Execution FPU Number
+//***** FPU Operation
+//*** Operation Type
+`define FpuOpWidth			3
+`define FpuOp				`FpuOpWidth-1:0
+typedef enum logic[`FpuOp] {
+	FPU_NOP		= `AluOpWidth'b000,
+	FPU_ADD		= `AluOpWidth'b001,
+	FPU_MULT	= `AluOpWidth'b010,
+	FPU_COMP	= `FpuOpWidth'b011,
+	FPU_CONV_I	= `AluOpWidth'b100,
+	FPU_CONV_F	= `AluOpWidth'b101
+} FpuOp_t;
 
-// Floating Point Unit Operation
-`define FLOATINGPOINT      9        // Floating-Point Operation Width
-`define FPU_OP             2:0      // Floating-Point Operation ( Define Below )
-`define FPU_CVTTO          4:3      // Convert Mode ( Define Below )
-`define FPU_NEG            3        // Negate Operation
-`define FPU_ABS            4        // Absolute Operation
-`define FPU_SUB            4        // Subtract Operation
-`define FPU_ROUND          6:5      // Rounding Mode ( Define Below )
-`define FPU_INTEGER        7        // Operand is the Word ( Integer ) Precision
-`define FPU_DOUBLE         8        // Operands are the Double Precision
-`define FPU_CONDITION      6:3      // Compare Condition
-`define FPU_COND_INV       6        // Compare Invalid
-`define FPU_COND_CF        5:3      // Condition Field
+//*** Sub-operation
+`define FpuSubOpWidth		4
+`define FpuSubOp			`FpuSubOpWidth-1:0
+//* Double or Single Precision
+`define FpuDouble			0
+//* Add or Sub select
+`define FpuSub				1
+//* Compare Condition
+`define FpuCompLt			1
+`define FpuCompNeg			2
+//* Convert to Float/Integer
+`define FpuCvtUnsigned		1
+`define FpuCvtDWord			2
 
 // Floating Point Operation Code
 `define FPU_NOP            3'b000   // No Operation
@@ -73,3 +84,5 @@
 `define FPU_CTRLR_MASK_U   2
 `define FPU_CTRLR_MASK_O   1
 `define FPU_CTRLR_MASK_V   0
+
+`endif // _FPU_SVH_INCLUDED_

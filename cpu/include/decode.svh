@@ -25,7 +25,8 @@ typedef enum logic[`ExeUnitBus] {
 	UNIT_DIV  	= 2,
 	UNIT_FPU  	= 3,
 	UNIT_FDIV 	= 4,
-	UNIT_MEM	= 5
+	UNIT_CSR	= 5
+	UNIT_MEM	= 6,
 } ExeUnit_t;
 
 

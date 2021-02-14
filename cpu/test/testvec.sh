@@ -27,7 +27,11 @@ set WaveOpt
 #############################################
 # Defines
 #############################################
-set DEFINE_LIST = ()
+if ( $Waves =~ 1 ) then
+	set DEFINE_LIST = ( WAVE_DUMP )
+else
+	set DEFINE_LIST = ()
+endif
 
 #############################################
 #           Gate Level Simulation           #
@@ -83,11 +87,7 @@ endsw
 ########################################
 #     Simulation Target Selection      #
 ########################################
-#set DEFAULT_DESIGN = "btb"
-#set DEFAULT_DESIGN = "decode_top"
-#set DEFAULT_DESIGN = "br_pred_cnt"
-#set DEFAULT_DESIGN = "fetch_top"
-set DEFAULT_DESIGN = "decoder"
+source target.sh
 
 if ( $# =~ 0 ) then
 	set TOP_MODULE = $DEFAULT_DESIGN
@@ -96,6 +96,23 @@ else
 endif
 
 switch ( $TOP_MODULE )
+	case "cpu_pipeline" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/fetch_top.sv \
+				${CPURTLDIR}/decode_top.sv \
+				${CPURTLDIR}/decoder.sv \
+			)
+		endif
+	breaksw
+
 	case "btb" :
 		set TEST_FILE = "${TOP_MODULE}_test.sv"
 		if ( $GATE =~ 1 ) then
@@ -120,6 +137,7 @@ switch ( $TOP_MODULE )
 		else
 			set RTL_FILE = ( \
 				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/decoder.sv \
 			)
 		endif
 	breaksw
@@ -138,7 +156,7 @@ switch ( $TOP_MODULE )
 		endif
 	breaksw
 
-	case "decoder"
+	case "decoder" :
 		set TEST_FILE = "${TOP_MODULE}_test.sv"
 		if ( $GATE =~ 1 ) then
 			set RTL_FILE = ( \
@@ -148,6 +166,73 @@ switch ( $TOP_MODULE )
 		else
 			set RTL_FILE = ( \
 				${CPURTLDIR}/${TOP_MODULE}.sv \
+			)
+		endif
+	breaksw
+
+	case "rename" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/rename_map.sv \
+			)
+		endif
+	breaksw
+
+	case "rob_status" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${PMRTLDIR}/ring_buf.sv \
+				${PMRTLDIR}/regfile.sv \
+				${PMRTLDIR}/cnt_bits.sv \
+			)
+		endif
+	breaksw
+
+	case "exp_manage" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+			)
+		endif
+	breaksw
+
+	case "reorder_buffer" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/rename.sv \
+				${CPURTLDIR}/rename_map.sv \
+				${CPURTLDIR}/rob_status.sv \
+				${CPURTLDIR}/exp_manage.sv \
+				${PMRTLDIR}/regfile.sv \
+				${PMRTLDIR}/ring_buf.sv \
+				${PMRTLDIR}/cnt_bits.sv \
 			)
 		endif
 	breaksw
@@ -169,8 +254,7 @@ source sim_tool.sh
 switch( $SIM_TOOL )
 	case "ncverilog" :
 		if ( $Waves =~ 1 ) then
-			set WaveOpt = +define+SimVision
-		else
+			set WaveOpt = +define+CADENCE
 		endif
 
 		set SIM_OPT = ( \
@@ -203,7 +287,7 @@ switch( $SIM_TOOL )
 
 	case "xmverilog" :
 		if ( $Waves =~ 1 ) then
-			set WaveOpt = +define+SimVision
+			set WaveOpt = +define+CADENCE
 		endif
 
 		set SIM_OPT = ( \
@@ -236,7 +320,7 @@ switch( $SIM_TOOL )
 
 	case "vcs" :
 		if ( $Waves =~ 1 ) then
-			set WaveOpt = +define+VCS
+			set WaveOpt = +define+SYNOPSYS
 		endif
 
 		set SIM_OPT = ( \

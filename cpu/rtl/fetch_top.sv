@@ -19,14 +19,14 @@ module fetch_top #(
 	input wire				reset_,
 
 	// Interface between I Cache
-	ICacheFetchIf.fetch		fetch_ic_if,
+	ICacheFetchIf.fetch		ic_fetch_if,
 	FetchDecIf.fetch		fetch_dec_if
 );
 
 	//***** assign output
-	assign fetch_dec_if.inst_e_ = fetch_ic_if.ic_e_;
-	assign fetch_dec_if.inst_pc = fetch_ic_if.ic_pc;
-	assign fetch_dec_if.inst = fetch_ic_if.ic_inst;
+	assign fetch_dec_if.inst_e_ = ic_fetch_if.ic_e_;
+	assign fetch_dec_if.inst_pc = ic_fetch_if.ic_pc;
+	assign fetch_dec_if.inst = ic_fetch_if.ic_inst;
 
 	//fetch_pc_sel #(
 	//) fetch_pc_sel (

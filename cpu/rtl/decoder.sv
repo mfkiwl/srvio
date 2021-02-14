@@ -17,13 +17,13 @@
 
 module decoder  #(
 	parameter ADDR = `AddrWidth,
-	parameter DATA = `DataWidth,
-	parameter INST = `InstWidth
+	parameter DATA = `DataWidth
 )(
 	input wire					clk,
 	input wire					reset_,
 
-	input wire					stall,
+	input wire					inst_e_,
+	input wire					is_full,
 	input wire [ADDR-1:0]		inst_pc,
 	input union packed {
 		RvRtype_t		r;
@@ -35,6 +35,8 @@ module decoder  #(
 		RvJtype_t		j;
 		RvBtype_t		b; }	inst,
 
+	output wire					stall,
+	output wire					dec_e_out_,
 	output RegFile_t			rs1_out,
 	output RegFile_t			rs2_out,
 	output RegFile_t			rd_out,
@@ -51,10 +53,11 @@ module decoder  #(
 	RegFile_t				rs1_p;
 	RegFile_t				rs2_p;
 	RegFile_t				rd_p;
-	logic					invalid_p;
+	reg						invalid_p;
 	ImmData_t				imm_data_p;
 	ExeUnit_t				unit_p;
 	OpCommand_t				command_p;
+	reg						inst_e_p_;
 
 	//***** combinational cells
 	RegFile_t				rs1;
@@ -68,6 +71,8 @@ module decoder  #(
 
 
 	//***** assign output
+	assign stall = is_full && !inst_e_p_;
+	assign dec_e_out_ = inst_e_p_;
 	assign rs1_out = rs1_p;
 	assign rs2_out = rs2_p;
 	assign rd_out = rd_p;
@@ -474,6 +479,7 @@ module decoder  #(
 	//***** sequential logics
 	always_ff @( posedge clk or negedge reset_ ) begin
 		if ( reset_ == `Enable_ ) begin
+			inst_e_p_ <= `Disable_;
 			rs1_p <= 0;
 			rs2_p <= 0;
 			rd_p <= 0;
@@ -482,7 +488,8 @@ module decoder  #(
 			unit_p <= UNIT_NOP;
 			command_p <= 0;
 		end else begin
-			if ( stall != `Enable ) begin
+			if ( stall == `Disable ) begin
+				inst_e_p_ <= inst_e_;
 				rs1_p <= rs1;
 				rs2_p <= rs2;
 				rd_p <= rd;

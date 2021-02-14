@@ -17,9 +17,11 @@
 `define CPU64		1
 
 //*** CPU ISA
-`define ISA_MIPS		0						// MIPS
-`define ISA_RV			1						// RISC-V
-`define CPU_ISA			`ISA_RV					// ISA select (*)
+typedef enum {
+	ISA_RISCV	= 0,
+	ISA_MIPS	= 1
+} ISA_t;
+`define CPU_ISA			ISA_RISCV	// ISA select (*)
 
 
 //***** CPU Databus Configuration
@@ -44,19 +46,19 @@
 //*** quantity
 `define PredTableDepth	1024					// # of Prediction table (*)
 `define PredCntWidth	2						// counter width (*)
-`define PredMaxDepth	8						// Prediction depth (*)
+`define PredMaxDepth	4						// Prediction depth (*)
 //*** prediction type
-`define PredSatCnt		0						// Simple Saturation Counter
-`define PredCorrelate	1						// (2,2) Correlating predictor
-`define PredTournament	2						// Tournament Predictor
-`define PredGshare		3						// Gshare
-`define PredPerceptron	4						// Perceptron Predictor
-`define PredTage		5						// TAGE
-`define PredType		`PredSatCnt				// predictor select (*)
+typedef enum {
+	BR_PRED_CNT			= 0,
+	BR_PRED_CORRELATE	= 1,
+	BR_PRED_GSHARE		= 2,
+	BR_PRED_TAGE		= 3
+} BrPredType_t;
+`define PredType		BR_PRED_CNT				// predictor select
 
 //*** Branch Target Buffer Configuration
-`define BtbTableDepth	256						// BTB Entry Depth (*)
-`define BtbCntWidth		2						// BTB confidence couter (*)
+`define BtbTableDepth	256						// BTB Entry Depth
+`define BtbCntWidth		2						// BTB confidence couter
 
 //*** Return Address Stack Configuration ( -> branch.h )
 `define RaStackDepth	16						// Depth of Return Address stack
@@ -64,8 +66,9 @@
 
 
 //***** Instruction Execution (Out-of-Order)
-`define SBDepth			16						// Depth of Score Board (*)
-`define RobDepth		16						// Depth of Rob (*)
+`define SBDepth			16						// Depth of Score Board
+`define RobDepth		16						// Depth of Rob
+												//	up to 32-entry is supported
 
 
 

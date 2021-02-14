@@ -24,10 +24,17 @@ if ( $SIM_TOOL =~ "xmverilog" ) then
 
 	echo "Removing directory .bpad"
 	rm -rf .bpad
+
+	foreach diag ( simvision*.diag )
+		echo "Removing file $diag"
+		rm -f $diag
+	end
 else if ( $SIM_TOOL =~ "vcs" ) then
 	# synopsys
 	echo "Removing file ucli.key"
 	rm -f ucli.key
+	rm -f waves.fsdb
+	rm -f novas_dump.log
 
 	foreach simbin ( *.sim )
 		echo "Removing file $simbin"

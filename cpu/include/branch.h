@@ -1,11 +1,10 @@
 /*
--- ============================================================================
--- FILE     : branch.h
---			: parameters for branch
--- ----------------------------------------------------------------------------
--- Revision  Date		Coding_by	Comment
--- 1.0.0     2019/12/7	ide			create new
--- ============================================================================
+* <rob_status.sv>
+* 
+* Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
+* 
+* This software is released under the MIT License.
+* https://opensource.org/licenses/mit-license.php
 */
 
 `ifndef _BRANCH_H_INCLUDED_
