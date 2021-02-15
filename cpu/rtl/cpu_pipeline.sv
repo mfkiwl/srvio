@@ -65,11 +65,11 @@ module cpu_pipeline #(
 
 
 
-	//***** instruction scheduler
-	inst_sched #(
+	//***** instruction issue
+	issue_top #(
 		.ADDR			( ADDR ),
 		.DATA			( DATA )
-	) inst_sched (
+	) issue_top (
 	);
 
 

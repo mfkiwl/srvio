@@ -40,7 +40,7 @@ module rename #(
 	localparam bit [REGFILE-1:0] INVALID_REG = 0;
 
 	//***** internal registers
-	reg [ROB_DEPTH-1:0]		valid;
+	//reg [ROB_DEPTH-1:0]		valid;
 
 	//***** internal wires
 	//*** destination operands
@@ -51,7 +51,7 @@ module rename #(
 	wire					dec_rename_req;
 	//*** source operands
 	//* rs1
-	wire					rs1_valid;
+	//wire					rs1_valid;
 	wire					rs1_zero_reg;
 	wire					rs1_dst_gpr;
 	wire					rs1_dst_fpr;
@@ -61,7 +61,7 @@ module rename #(
 	wire					rs1_commit;
 	RegFile_t				rob_rs1;
 	//* rs2
-	wire					rs2_valid;
+	//wire					rs2_valid;
 	wire					rs2_zero_reg;
 	wire					rs2_dst_gpr;
 	wire					rs2_dst_fpr;
@@ -72,7 +72,7 @@ module rename #(
 	RegFile_t				rob_rs2;
 
 	//***** combinational cells
-	logic [ROB-1:0]			next_valid;
+	//logic [ROB-1:0]			next_valid;
 
 
 
@@ -102,7 +102,7 @@ module rename #(
 	assign dec_rd_valid = !dec_invalid && dec_rename_req;
 	//*** source operands
 	//* rs1
-	assign rs1_valid = valid[dec_rs1.addr];
+	//assign rs1_valid = valid[dec_rs1.addr[ROB-1:0]];
 	assign rs1_dst_gpr = ( dec_rs1.regtype == TYPE_GPR );
 	assign rs1_dst_fpr = ( dec_rs1.regtype == TYPE_FPR );
 	assign rs1_zero_reg = ( dec_rs1.addr == {`GprAddrWidth{1'b0}} );
@@ -111,7 +111,7 @@ module rename #(
 	assign rob_rs1 = '{regtype: TYPE_ROB, addr: rs1_cam_addr};
 	assign rs1_commit = ( rs1_cam_addr == com_rob_id ) && !commit_e_;
 	//* rs2
-	assign rs2_valid = valid[dec_rs2.addr];
+	//assign rs2_valid = valid[dec_rs2.addr[ROB-1:0]];
 	assign rs2_dst_gpr = ( dec_rs2.regtype == TYPE_GPR );
 	assign rs2_dst_fpr = ( dec_rs2.regtype == TYPE_FPR );
 	assign rs2_zero_reg = ( dec_rs2.addr == {`GprAddrWidth{1'b0}} );
@@ -147,28 +147,28 @@ module rename #(
 
 
 	//***** combinational logics
-	int ci;
-	always_comb begin
-		for ( ci = 0; ci < ROB; ci = ci + 1 ) begin
-			unique if ( !dec_e_ && ( dec_rob_id == ci ) ) begin
-				next_valid[ci] = dec_rd_valid;
-			end else if ( !commit_e_ && ( com_rob_id == ci ) ) begin
-				next_valid[ci] = `Disable;
-			end else begin
-				next_valid[ci] = valid[ci];
-			end
-		end
-	end
+	//int ci;
+	//always_comb begin
+	//	for ( ci = 0; ci < ROB; ci = ci + 1 ) begin
+	//		unique if ( !dec_e_ && ( dec_rob_id == ci ) ) begin
+	//			next_valid[ci] = dec_rd_valid;
+	//		end else if ( !commit_e_ && ( com_rob_id == ci ) ) begin
+	//			next_valid[ci] = `Disable;
+	//		end else begin
+	//			next_valid[ci] = valid[ci];
+	//		end
+	//	end
+	//end
 
 
 
-	//***** sequential logics
-	always_ff @( posedge clk or negedge reset_ ) begin
-		if ( reset_ == `Enable_ ) begin
-			valid <= `Disable;
-		end else begin
-			valid <= next_valid;
-		end
-	end
+	////***** sequential logics
+	//always_ff @( posedge clk or negedge reset_ ) begin
+	//	if ( reset_ == `Enable_ ) begin
+	//		valid <= `Disable;
+	//	end else begin
+	//		valid <= next_valid;
+	//	end
+	//end
 
 endmodule
