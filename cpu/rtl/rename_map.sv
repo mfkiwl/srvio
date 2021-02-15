@@ -14,7 +14,6 @@
 module rename_map #(
 	parameter DATA = $bits(RegFile_t),
 	parameter DEPTH = `RobDepth,
-	parameter WRITE = 2,
 	parameter READ = 2,
 	// constant
 	parameter ADDR = $clog2(DEPTH)
@@ -23,10 +22,10 @@ module rename_map #(
 	input  wire							reset_,
 
 	// write ports
-	input  wire [WRITE-1:0]				we_,	// write enable
-	input  wire [WRITE-1:0]				wv,		//       valid
-	input  wire [WRITE-1:0][DATA-1:0]	wd,		//       data
-	input  wire [WRITE-1:0][ADDR-1:0]	waddr,	//       addr
+	input  wire							we_,	// write enable
+	input  wire 						wv,		//       valid
+	input  wire [DATA-1:0]				wd,		//       data
+	input  wire [ADDR-1:0]				waddr,	//       addr
 
 	// invalidate
 	input  wire							flush_,
@@ -44,7 +43,7 @@ module rename_map #(
 	reg [DATA-1:0]					cam_cell [DEPTH-1:0];
 
 	//***** internal wires
-	wire [WRITE-1:0]				we;
+	wire							we;
 	wire [READ-1:0]					re;
 	wire [DATA-1:0]					next_cam_cell [DEPTH-1:0];
 
@@ -60,41 +59,29 @@ module rename_map #(
 	generate
 		genvar gi, gj, gk;
 		for ( gi = 0; gi < DEPTH; gi = gi + 1 ) begin : LP_ent
-			wire [WRITE-1:0]	wmatch;				// address match
+			wire				wmatch;				// address match
 			wire [DATA-1:0]		cell_each;			// current cell
+			wire [DATA-1:0]		wr_each;
+			wire [DATA-1:0]		wr_each_;
+			wire [DATA-1:0]		inv_each;
+			wire [DATA-1:0]		inv_each_;
 			wor				 	invalidate;			// invalidate entry
-			wor [DATA-1:0]		next_cell_each;		// next cell data ( wired-or )
 
 			//*** this entry
 			assign cell_each = cam_cell[gi];
-			assign invalidate = !inve_ && (gi == invaddr);
-
 
 			//*** update
-			for ( gj = 0; gj < WRITE; gj = gj + 1 ) begin : LP_cell
-				//* separate
-				wire [DATA-1:0]					wr_each;
-				wire [DATA-1:0]					wr_each_;
-				wire [DATA-1:0]					inv_each;
-				wire [DATA-1:0]					inv_each_;
-
-				//* Address check
-				assign wmatch[gj] = we[gj] && (waddr[gj] == gi) && wv[gj];
-				assign invalidate =
-					( ( wd[gj] == cell_each ) && we[gj] ) || !flush_;
-
-				//* data select
-				assign wr_each = {DATA{wmatch[gj]}};
-				assign wr_each_ = {DATA{!wmatch[gj]}};
-				assign inv_each = {DATA{invalidate}};
-				assign inv_each_ = {DATA{!invalidate}};
-				assign next_cell_each
-					= ( wr_each & wd[gj] )
-						| ( cell_each & wr_each_ & inv_each_ );
-			end
-
-			//*** concat
-			assign next_cam_cell[gi] = next_cell_each;
+			assign wmatch = we && (waddr == gi) && wv;
+			assign invalidate = 
+				(!inve_ && (gi == invaddr) ) ||
+				( ( wd == cell_each ) && we ) || !flush_;
+			assign wr_each = {DATA{wmatch}};
+			assign wr_each_ = {DATA{!wmatch}};
+			assign inv_each = {DATA{invalidate}};
+			assign inv_each_ = {DATA{!invalidate}};
+			assign next_cam_cell[gi] =
+				( wr_each & wd & inv_each_ ) | 
+				(cell_each & wr_each_ & inv_each_ );
 		end
 	endgenerate
 
@@ -138,7 +125,7 @@ module rename_map #(
 
 	//***** sequential logics
 	int i;
-	always @( posedge clk or negedge reset_ ) begin
+	always_ff @( posedge clk or negedge reset_ ) begin
 		if ( reset_ == `Enable_ ) begin
 			for ( i = 0; i < DEPTH; i = i + 1 ) begin
 				cam_cell[i] <= {DATA{1'b0}};

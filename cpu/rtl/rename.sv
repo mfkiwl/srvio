@@ -125,7 +125,6 @@ module rename #(
 	rename_map #(
 		.DATA		( REGFILE ),
 		.DEPTH		( ROB_DEPTH ),
-		.WRITE		( 1 ),
 		.READ		( 2 )
 	) rename_map (
 		.clk		( clk ),

@@ -19,6 +19,8 @@ module rename_test;
 	reg				clk;
 	reg				reset_;
 
+	reg				flush_;
+
 	reg				dec_e_;
 	reg				dec_invalid;
 	RegFile_t		dec_rd;
@@ -34,7 +36,7 @@ module rename_test;
 
 	rename #(
 		.ROB_DEPTH	( ROB_DEPTH )
-	) rob_depth (
+	) rename (
 		.*
 	);
 
@@ -46,6 +48,8 @@ module rename_test;
 	initial begin
 		clk = `Low;
 		reset_ = `Enable_;
+
+		flush_ = `Disable_;
 
 		dec_e_ = `Disable_;
 		dec_invalid = `Disable;
@@ -66,6 +70,8 @@ module rename_test;
 		dec_e_ = `Disable_;
 		#(STEP);
 		dec_e_ = `Enable_;
+		dec_rd.regtype = TYPE_GPR;
+		dec_rd.addr = 0;
 		dec_rs1.regtype = TYPE_GPR;
 		dec_rs1.addr = 1;
 		dec_rs2.regtype = TYPE_GPR;
@@ -74,7 +80,6 @@ module rename_test;
 		dec_e_ = `Disable_;
 
 		#(STEP);
-		reset_ = `Disable_;
 		dec_e_ = `Enable_;
 		dec_rd.regtype = TYPE_GPR;
 		dec_rd.addr = 1;
@@ -83,6 +88,8 @@ module rename_test;
 		dec_e_ = `Disable_;
 		#(STEP);
 		dec_e_ = `Enable_;
+		dec_rd.regtype = TYPE_GPR;
+		dec_rd.addr = 0;
 		dec_rs1.regtype = TYPE_GPR;
 		dec_rs1.addr = 1;
 		dec_rs2.regtype = TYPE_GPR;
@@ -90,6 +97,27 @@ module rename_test;
 		#(STEP);
 		dec_e_ = `Disable_;
 
+		#(STEP);
+		dec_e_ = `Enable_;
+		dec_rd.regtype = TYPE_GPR;
+		dec_rd.addr = 2;
+		dec_rob_id = 6;
+
+		#(STEP);
+		dec_e_ = `Disable_;
+		flush_ = `Enable_;
+
+
+		// rename and flush at the same time
+		#(STEP*2);
+		dec_e_ = `Enable_;
+		dec_rd.regtype = TYPE_GPR;
+		dec_rd.addr = 2;
+		dec_rob_id = 6;
+		flush_ = `Enable_;
+		#(STEP);
+		dec_e_ = `Disable_;
+		flush_ = `Disable_;
 
 		#(STEP*5);
 

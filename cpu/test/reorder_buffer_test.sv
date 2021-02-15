@@ -79,18 +79,41 @@ module reorder_buffer_test;
 	end
 
 	always @(posedge clk ) begin
+		if ( dec_e_ == `Enable_ ) begin
+			`SetCharGreen
+			$display("instruction decode, pc[0x%x]", dec_pc);
+			`ResetCharSetting
+			$display("    rob-id[0x%x]", dec_rob_id);
+			$display("    decode destination[0x%x]", dec_rd);
+			$display("    renamed destination[0x%x]", ren_rd);
+			$display("    decode source 1[0x%x]", dec_rs1);
+			$display("    renamed source 1[0x%x]", ren_rs1);
+			$display("    decode source 2[0x%x]", dec_rs2);
+			$display("    renamed source 2[0x%x]", ren_rs2);
+		end
+
 		if ( wb_e_ == `Enable_ ) begin
-			$display("writeback, rob-id[%x]", wb_rd.addr);
+			`SetCharYellow
+			$display("writeback, rob-id[0x%x]", wb_rd.addr);
+			`ResetCharSetting
+
+			$display("    data[0x%x]", wb_data);
 		end
 
 		if ( commit_e_ == `Enable_ ) begin
-			$display("instruction commit, pc[%x]", commit_pc);
+			`SetCharMagenta
+			$display("instruction commit, pc[0x%x]", commit_pc);
+			`ResetCharSetting
 
 			if ( commit_exp_ == `Enable_ ) begin
-				$display("Exception occur, code[%x]",commit_exp_code);
+				$display("    Exception occur, code[0x%x]",commit_exp_code);
 			end else if ( flush_ == `Enable_ ) begin
-				$display("pipeline flushed");
+				$display("    pipeline flushed");
 			end
+
+			$display("    rob-id[0x%x]", commit_rob_id);
+			$display("    rd[0x%x]", commit_rd);
+			$display("    data[0x%x]", commit_data);
 		end
 	end
 
@@ -379,6 +402,7 @@ module reorder_buffer_test;
 			index = $urandom_range(0,rob_id_history.size-1);
 			wb_rd = rob_id_history[index];
 			rob_id_history.delete(index);
+			wb_data = $urandom();
 			wb_exp_ = `Disable_;
 			wb_exp_code = EXP_I_MISS_ALIGN;
 			wb_pred_miss_ = `Disable_;
@@ -388,11 +412,68 @@ module reorder_buffer_test;
 			#(STEP);
 		end
 
-
-		//***** commit and decode timing check
-
 		#(STEP*10);
 
+		reset_ = `Enable_;
+		#(STEP);
+		reset_ = `Disable_;
+		#(STEP);
+
+
+		//***** rename test
+		//	destination of commited instruction and 
+		//		source of decode instruction are the same
+		`SetCharBold
+		`SetCharCyan
+		$display("rename test");
+		`ResetCharSetting
+		dec_e_ = `Enable_;
+		dec_pc = 'hbeef0000;
+		dec_rd = '{regtype: TYPE_GPR, addr: 1};		// rename to rob[0]
+		dec_rs1 = '{regtype: TYPE_GPR, addr: 0};
+		dec_rs2 = '{regtype: TYPE_IMM, addr: 0};
+		dec_br_ = `Disable_;
+		dec_br_pred_taken_ = `Disable_;
+		dec_jump_ = `Disable_;
+		dec_invalid = `Disable;
+		rob_id_history.push_back(ren_rd);
+		#(STEP);
+		wb_clear;
+		dec_e_ = `Enable_;
+		dec_pc = 'hbeef0004;
+		dec_rd = '{regtype: TYPE_GPR, addr: 2};		// rename to rob[0]
+		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// must not be renamed
+		dec_rs2 = '{regtype: TYPE_GPR, addr: 1};
+		dec_br_ = `Disable_;
+		dec_br_pred_taken_ = `Disable_;
+		dec_jump_ = `Disable_;
+		dec_invalid = `Disable;
+		rob_id_history.push_back(ren_rd);
+		#(STEP);
+		dec_clear;
+		#(STEP);
+		wb_e_ = `Enable_;
+		wb_rd = rob_id_history.pop_front();
+		wb_exp_ = `Disable_;
+		wb_exp_code = EXP_I_MISS_ALIGN;
+		wb_pred_miss_ = `Disable_;
+		wb_jump_miss_ = `Enable_;
+		#(STEP);
+		wb_clear;
+		dec_e_ = `Enable_;
+		dec_pc = 'hbeef0004;
+		dec_rd = '{regtype: TYPE_GPR, addr: 2};		// rename to rob[0]
+		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// must not be renamed
+		dec_rs2 = '{regtype: TYPE_GPR, addr: 1};
+		dec_br_ = `Disable_;
+		dec_br_pred_taken_ = `Disable_;
+		dec_jump_ = `Disable_;
+		dec_invalid = `Disable;
+		rob_id_history.push_back(ren_rd);
+		#(STEP);
+		dec_clear;
+
+		#(STEP*5);
 		$finish;
 	end
 
