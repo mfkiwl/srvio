@@ -1,4 +1,6 @@
 # parameter settings
+#	synthesis target : 2GHz
+#set CLK_CYC			500
 set CLK_CYC			0.5
 set IN_DELAY_RATIO	0.10
 set OUT_DELAY_RATIO	0.2
