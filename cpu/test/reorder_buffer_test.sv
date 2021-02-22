@@ -48,7 +48,9 @@ module reorder_buffer_test;
 
 	wire [ROB-1:0]	dec_rob_id;
 	RegFile_t		ren_rs1;
+	wire			ren_rs1_ready;
 	RegFile_t		ren_rs2;
+	wire			ren_rs2_ready;
 	RegFile_t		ren_rd;
 	wire			commit_e_;
 	wire			flush_;

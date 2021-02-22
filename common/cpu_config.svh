@@ -17,11 +17,12 @@
 `define CPU64		1
 
 //*** CPU ISA
-typedef enum {
-	ISA_RISCV	= 0,
-	ISA_MIPS	= 1
-} ISA_t;
-`define CPU_ISA			ISA_RISCV	// ISA select (*)
+//typedef enum {
+//	ISA_RISCV	= 0
+//	//ISA_MIPS	= 1	// future work
+//	//ISA_POWER	= 2	// future work
+//} ISA_t;
+//`define CPU_ISA			ISA_RISCV	// ISA select (*)
 
 
 //***** CPU Databus Configuration
@@ -60,13 +61,13 @@ typedef enum {
 `define BtbTableDepth	256						// BTB Entry Depth
 `define BtbCntWidth		2						// BTB confidence couter
 
-//*** Return Address Stack Configuration ( -> branch.h )
+//*** Return Address Stack Configuration
 `define RaStackDepth	16						// Depth of Return Address stack
 
 
 
 //***** Instruction Execution (Out-of-Order)
-`define SBDepth			16						// Depth of Score Board
+`define IqDepth			8						// Depth of Instruction Queue
 `define RobDepth		16						// Depth of Rob
 												//	up to 32-entry is supported
 

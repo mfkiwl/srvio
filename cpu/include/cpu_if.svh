@@ -17,6 +17,8 @@
 `include "alu.svh"
 `include "mem.svh"
 `include "decode.svh"
+`include "issue.svh"
+`include "exe.svh"
 
 
 
@@ -91,80 +93,149 @@ endinterface : FetchDecIf
 
 
 
-//***** Decode and Instruction Scheduler Interface
+//***** Decode and Issue Interface
 interface DecIsIf #(
-	parameter ADDR = `AddrWidth, 
-	parameter INST = `InstWidth,
-	parameter ROB_DEPTH = `RobDepth,
-	// constant
-	parameter ROB = $clog2(ROB_DEPTH)
+	parameter ADDR = `AddrWidth
 );
 
-	//*** Decode to Instruction Scheduler
-	logic				en_;
-	loigc [ADDR-1:0]	pc;
-	RegFile_t			rd;
-	RegFile_t			rs1;
-	RegFile_t			rs2;
-	logic				br_;
-	logic				br_pred_taken_;
-	logic				jump_;
-	logic				invalid;
-	ImmData_t			imm_data;
-	ExeUnit_t			unit;
-	OpCommand_t			command;
+	//*** Decode to Issue
+	logic				dec_e_;
+	loigc [ADDR-1:0]	dec_pc;
+	RegFile_t			dec_rd;
+	RegFile_t			dec_rs1;
+	RegFile_t			dec_rs2;
+	logic				dec_br_;
+	logic				dec_br_pred_taken_;
+	logic				dec_jump_;
+	logic				dec_invalid;
+	ImmData_t			dec_imm;
+	ExeUnit_t			dec_unit;
+	OpCommand_t			dec_command;
 
-	//*** Instruction Scheduler to Decoder
+	//*** Issue to Decoder
 	logic				is_full;
-	logic [ROB-1:0]		dec_rob_id;
 
 	//*** Decode Stage side signals
 	modport decode (
 		input	is_full,
-		input	dec_rob_id,
-		output	en_,
-		output	rd,
-		output	rs1,
-		output	rs2,
-		output	br_,
-		output	br_pred_taken_,
-		output	jump_,
-		output	invalid,
-		output	imm_data,
-		output	unit,
-		output	command
+		output	dec_e_,
+		output	dec_rd,
+		output	dec_rs1,
+		output	dec_rs2,
+		output	dec_br_,
+		output	dec_br_pred_taken_,
+		output	dec_jump_,
+		output	dec_invalid,
+		output	dec_imm,
+		output	dec_unit,
+		output	dec_command
 	);
 
-	//*** Instruction Scheduler side signals
-	modport inst_sched (
-		input	en_,
-		input	rd,
-		input	rs1,
-		input	rs2,
-		input	br_,
-		input	br_pred_taken_,
-		input	jump_,
-		input	invalid,
-		input	imm_data,
-		input	unit,
-		input	command,
-		output	is_full,
-		output	dec_rob_id
+	//*** Issue side signals
+	modport issue (
+		input	dec_e_,
+		input	dec_rd,
+		input	dec_rs1,
+		input	dec_rs2,
+		input	dec_br_,
+		input	dec_br_pred_taken_,
+		input	dec_jump_,
+		input	dec_invalid,
+		input	dec_imm,
+		input	dec_unit,
+		input	dec_command,
+		output	is_full
 	);
 
 endinterface : DecIsIf
 
 
 
+//***** Issue and Execution units Interface
+interface IsExeIf #(
+	parameter DATA = `DataWidth,
+	parameter ROB_DEPTH = `RobDepth,
+	// constant
+	parameter ROB = $clog2(ROB_DEPTH)
+);
+
+	//*** Issue to Exe
+	logic				issue_e_;
+	RegFile_t			issue_rd;
+	logic				issue_data1_e_;
+	logic [DATA-1:0]	issue_data1;
+	logic				issue_data2_e_;
+	logic [DATA-1:0]	issue_data2;
+	ExeUnit_t			issue_unit;
+	OpCommand_t			issue_command;
+
+	//*** Exe to Issue
+	logic				pre_wb_e_;
+	RegFile_t			pre_wb_rd;
+	logic				wb_e_;
+	RegFile_t			wb_rd;
+	logic [DATA-1:0]	wb_data;
+	logic				wb_exp_;
+	ExpCode_t			wb_exp_code;
+	logic				wb_pred_miss_;
+	logic				wb_jump_miss_;
+	ExeBusy_t			exe_busy;
+
+	modport issue (
+		input	pre_wb_e_;
+		input	pre_wb_rd;
+		input	wb_e_;
+		input	wb_rd;
+		input	wb_data;
+		input	wb_exp_;
+		input	wb_exp_code;
+		input	wb_pred_miss_;
+		input	wb_jump_miss_;
+		input	exe_busy;
+		output	issue_e_;
+		output	rd;
+		output	data1_e_;
+		output	data1;
+		output	data2_e_;
+		output	data2;
+		output	unit;
+		output	command;
+	);
+
+	modport exe (
+		input	issue_e_;
+		input	rd;
+		input	data1_e_;
+		input	data1;
+		input	data2_e_;
+		input	data2;
+		input	unit;
+		input	command;
+		output	pre_wb_e_;
+		output	pre_wb_rd;
+		output	wb_e_;
+		output	wb_rd;
+		output	wb_data;
+		output	wb_exp_;
+		output	wb_exp_code;
+		output	wb_pred_miss_;
+		output	wb_jump_miss_;
+		output	exe_busy;
+	);
+
+endinterface : IsExeIf
+
+
+
 //***** Exchange Branch/Jump information
-interface CtrlInstIf #(
+interface PcInstIf #(
 	parameter ADDR = `AddrWidth,
 	parameter INST = `InstWidth
 );
 
-	//*** Fetch to Instruction Schedule
+	//*** Fetch to Issue
 
-	//*** Decode to Instruction Schedule
+	//*** Decode to Issue
 
 	modport fetch (
 	);
@@ -172,7 +243,7 @@ interface CtrlInstIf #(
 	modport decode (
 	);
 
-	modport inst_sched (
+	modport issue (
 	);
 
 	modport exe (

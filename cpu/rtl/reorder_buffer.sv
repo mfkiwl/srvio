@@ -35,9 +35,11 @@ module reorder_buffer #(
 	input wire				dec_jump_,
 	input wire				dec_invalid,
 	output wire [ROB-1:0]	dec_rob_id,
-	output RegFile_t		ren_rs1,
-	output RegFile_t		ren_rs2,
 	output RegFile_t		ren_rd,
+	output RegFile_t		ren_rs1,
+	output wire				ren_rs1_ready,
+	output RegFile_t		ren_rs2,
+	output wire				ren_rs2_ready,
 
 	input wire				wb_e_,
 	input RegFile_t			wb_rd,
@@ -131,6 +133,11 @@ module reorder_buffer #(
 		.dec_jump_		( dec_jump_ ),
 		.dec_invalid	( dec_invalid ),
 		.dec_rob_id		( dec_rob_id ),
+
+		.ren_rs1		( ren_rs1 ),
+		.ren_rs2		( ren_rs2 ),
+		.ren_rs1_ready	( ren_rs1_ready ),
+		.ren_rs2_ready	( ren_rs2_ready ),
 
 		.wb_e_			( wb_e_ ),
 		.wb_rob_id		( wb_rob_id ),

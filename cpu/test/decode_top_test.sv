@@ -69,12 +69,7 @@ module decode_top_test;
 		$finish;
 	end
 
- `ifdef SimVision
-	initial begin
-		$shm_open();
-		$shm_probe("AC");
-	end
- `endif
+	`include "waves.vh"
 `endif
 	
 

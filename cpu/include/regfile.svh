@@ -34,9 +34,10 @@ typedef enum logic[`RegType] {
 	TYPE_NONE	= `RegTypeWidth'b000,
 	TYPE_GPR	= `RegTypeWidth'b001,
 	TYPE_FPR	= `RegTypeWidth'b010,
-	TYPE_IMM	= `RegTypeWidth'b011,	// Immediate
-	TYPE_PC		= `RegTypeWidth'b100,	// use program counter
-	TYPE_ROB	= `RegTypeWidth'b101	// Rob-based Rename Register
+	TYPE_BYPASS	= `RegTypeWidth'b011,	// Bypass Register (Must be renamed)
+	TYPE_IMM	= `RegTypeWidth'b100,	// Immediate
+	TYPE_PC		= `RegTypeWidth'b101,	// use program counter
+	TYPE_ROB	= `RegTypeWidth'b110	// Rob-based Rename Register
 } RegType_t;
 
 typedef struct packed {

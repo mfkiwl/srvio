@@ -11,28 +11,12 @@
 `define _DECODE_SVH_INCLUDED_
 
 //***** include dependent files
-`include "alu.svh"
-`include "mem.svh"
-
-
-
-//***** Functional Unit configuration
-`define ExeUnitWidth	3
-`define ExeUnitBus		`ExeUnitWidth-1:0
-typedef enum logic[`ExeUnitBus] {
-	UNIT_NOP	= 0,
-	UNIT_ALU	= 1,
-	UNIT_DIV  	= 2,
-	UNIT_FPU  	= 3,
-	UNIT_FDIV 	= 4,
-	UNIT_CSR	= 5
-	UNIT_MEM	= 6,
-} ExeUnit_t;
+`include "exe.svh"
 
 
 
 //***** Operation Command
-`define OpCommandWidth	5	// (仮)
+`define OpCommandWidth	`ExeCommandWidth
 `define OpCommand		`OpCommandWidth-1:0
 typedef union packed {
 	AluCommand_t		alu;
@@ -59,8 +43,8 @@ typedef enum logic [`ImmShift] {
 //*** Immediate bit width encoding
 typedef enum logic [`ImmSize] {
 	IMM_SIZE5		= `ImmSizeWidth'b00,
-	IMM_SIZE12		= `ImmSizeWidth'b01,
-	IMM_SIZE12_5	= `ImmSizeWidth'b10,
+	IMM_SIZE5_12	= `ImmSizeWidth'b01,	// CSR specific
+	IMM_SIZE12		= `ImmSizeWidth'b10,
 	IMM_SIZE20		= `ImmSizeWidth'b11
 } ImmSize_t;
 

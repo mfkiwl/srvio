@@ -26,11 +26,8 @@ module decode_top #(
 );
 
 	//***** internal wires
-	//*** fetch to decode
-	wire			inst_e_;
-	wire [ADDR-1:0]	inst_pc;
-	wire [INST-1:0]	inst;
-	wire			dec_stall;
+	//*** decode to fetch
+	wire			dec_stall_s;
 	//*** simple
 	wire			dec_e_s_;
 	RegFile_t		rs1_s;
@@ -54,26 +51,16 @@ module decode_top #(
 
 	//***** output assign
 	//*** decode to fetch
-	assign fetch_dec_if.dec_stall = dec_stall;
+	assign fetch_dec_if.dec_stall = dec_stall_s;
 	//*** decode to instruction scheduler
 	assign dec_is_if.dec_e_ = dec_e_s_;
-	assign dec_is_if.rs1 = rs1_s;
-	assign dec_is_if.rs2 = rs2_s;
-	assign dec_is_if.rd = rd_s;
-	assign dec_is_if.invalid = invalid_s; 
-	assign dec_is_if.imm_data = imm_data_s;
-	assign dec_is_if.unit = unit_s;
-	assign dec_is_if.command = command_s;
-
-
-
-	//***** internal assign
-	//*** fetch to decode
-	assign inst_e_ = fetch_dec_if.inst_e_;
-	assign inst_pc = fetch_dec_if.inst_pc;
-	assign inst = fetch_dec_if.inst;
-	//*** instruction scheduler to decode
-	assign is_full = dec_is_if.is_full;
+	assign dec_is_if.dec_rs1 = rs1_s;
+	assign dec_is_if.dec_rs2 = rs2_s;
+	assign dec_is_if.dec_rd = rd_s;
+	assign dec_is_if.dec_invalid = invalid_s; 
+	assign dec_is_if.dec_imm = imm_data_s;
+	assign dec_is_if.dec_unit = unit_s;
+	assign dec_is_if.dec_command = command_s;
 
 
 
@@ -85,12 +72,12 @@ module decode_top #(
 		.clk			( clk ),
 		.reset_			( reset_ ),
 
-		.inst_e_		( inst_e_ ),
-		.inst_pc		( inst_pc ),
-		.is_full		( is_full ),
-		.inst			( inst ),
+		.inst_e_		( fetch_dec_if.inst_e_ ),
+		.inst_pc		( fetch_dec_if.inst_pc ),
+		.is_full		( dec_is_if.is_full ),
+		.inst			( fetch_dec_if.inst ),
 
-		.stall			( dec_stall ),
+		.stall			( dec_stall_s ),
 		.dec_e_out_		( dec_e_s_ ),
 		.rs1_out		( rs1_s ),
 		.rs2_out		( rs2_s ),

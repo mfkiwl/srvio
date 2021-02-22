@@ -10,3 +10,7 @@ xmverilog.history
 *waves.shm/
 *xcelium.d/
 *.simvision/
+
+# ignore cad library
+*ASAP7_PDKandLIB_v1p6
+*tsmc65_lib

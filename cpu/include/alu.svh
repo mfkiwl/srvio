@@ -48,12 +48,6 @@ typedef enum logic[`AluOp] {
 
 
 
-//***** Commit Data Format
-//*** branch
-`define AluBrTaken_			0	// bit0 of writeback data
-
-
-
 //***** ALU Command
 //	Width must be `OpCommandWidth
 `define AluCommandWidth		7	// op + sub_op

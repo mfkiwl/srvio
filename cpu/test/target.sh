@@ -9,4 +9,6 @@
 #set DEFAULT_DESIGN = "rename"
 #set DEFAULT_DESIGN = "rob_status"
 #set DEFAULT_DESIGN = "exp_manage"
-set DEFAULT_DESIGN = "reorder_buffer"
+#set DEFAULT_DESIGN = "reorder_buffer"
+#set DEFAULT_DESIGN = "inst_sched"
+set DEFAULT_DESIGN = "inst_queue"

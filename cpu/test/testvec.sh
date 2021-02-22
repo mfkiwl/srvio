@@ -237,6 +237,42 @@ switch ( $TOP_MODULE )
 		endif
 	breaksw
 
+	case "inst_sched" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/issue_select.sv \
+				${PMRTLDIR}/selector.sv \
+			)
+		endif
+	breaksw
+
+	case "inst_queue" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/inst_sched.sv \
+				${CPURTLDIR}/issue_select.sv \
+				${PMRTLDIR}/freelist.sv \
+				${PMRTLDIR}/selector.sv \
+				${PMRTLDIR}/cnt_bits.sv \
+				${PMRTLDIR}/regfile.sv \
+			)
+		endif
+	breaksw
+
 
 	default : 
 		# Error

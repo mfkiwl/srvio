@@ -14,7 +14,8 @@
 module cpu_pipeline #(
 	parameter ADDR = `AddrWidth,
 	parameter DATA = `DataWidth,
-	parameter INST = `InstWidth
+	parameter INST = `InstWidth,
+	parameter ROB_DEPTH = `RobDepth
 )(
 	input wire				clk,
 	input wire				reset_
@@ -33,8 +34,12 @@ module cpu_pipeline #(
 
 	DecIsIf #(
 		.ADDR		( ADDR ),
-		.INST		( INST )
+		.ROB_DEPTH	( ROB_DEPTH )
 	) dec_is_if();
+
+	IsExIf #(
+		.DATA		( DATA )
+	) is_exe_if();
 
 
 
@@ -80,7 +85,5 @@ module cpu_pipeline #(
 		.DATA			( DATA )
 	) exe_top (
 	);
-
-
 
 endmodule

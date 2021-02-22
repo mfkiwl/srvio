@@ -32,6 +32,11 @@ module rob_status #(
 	input wire				dec_invalid,
 	output wire [ROB-1:0]	dec_rob_id,
 
+	input RegFile_t			ren_rs1,
+	input RegFile_t			ren_rs2,
+	output wire				ren_rs1_ready,
+	output wire				ren_rs2_ready,
+
 	input wire				wb_e_,
 	input wire [ROB-1:0]	wb_rob_id,
 	input wire				wb_exp_,
@@ -124,6 +129,8 @@ module rob_status #(
 	assign com_exp_ = com_rob_stat.exp_;
 	assign com_exp_code = com_rob_stat.exp_code;
 `endif
+	assign ren_rs1_ready = !com_ready_[ren_rs1.addr[ROB-1:0]];
+	assign ren_rs2_ready = !com_ready_[ren_rs2.addr[ROB-1:0]];
 	assign rob_busy = !busy_;
 
 
