@@ -193,24 +193,24 @@ interface IsExeIf #(
 		input	wb_jump_miss_;
 		input	exe_busy;
 		output	issue_e_;
-		output	rd;
-		output	data1_e_;
-		output	data1;
-		output	data2_e_;
-		output	data2;
-		output	unit;
-		output	command;
+		output	issue_rd;
+		output	issue_data1;
+		output	issue_data1_e_;
+		output	issue_data2;
+		output	issue_data2_e_;
+		output	issue_unit;
+		output	issue_command;
 	);
 
 	modport exe (
 		input	issue_e_;
-		input	rd;
-		input	data1_e_;
-		input	data1;
-		input	data2_e_;
-		input	data2;
-		input	unit;
-		input	command;
+		input	issue_rd;
+		input	issue_data1;
+		input	issue_data1_e_;
+		input	issue_data2;
+		input	issue_data2_e_;
+		input	issue_unit;
+		input	issue_command;
 		output	pre_wb_e_;
 		output	pre_wb_rd;
 		output	wb_e_;
@@ -230,25 +230,33 @@ endinterface : IsExeIf
 //***** Exchange Branch/Jump information
 interface PcInstIf #(
 	parameter ADDR = `AddrWidth,
-	parameter INST = `InstWidth
+	parameter INST = `InstWidth,
+	parameter ROB_DEPTH = `RobDepth,
+	// constant
+	parameter ROB = $clog2(ROB_DEPTH)
 );
 
 	//*** Fetch to Issue
 
 	//*** Decode to Issue
 
+	//*** Issue to Fetch
+	logic [ROB-1:0]		dec_rob_id
+
 	modport fetch (
+		input	dec_rob_id;
 	);
 
 	modport decode (
 	);
 
 	modport issue (
+		output	dec_rob_id;
 	);
 
 	modport exe (
 	);
 
-endinterface
+endinterface : PcInstIf
 
 `endif // _CPU_IF_SVH_INCLUDED_

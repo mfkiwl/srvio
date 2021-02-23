@@ -84,6 +84,9 @@ typedef enum logic[`ExeOp] {
 //* Add or Sub select
 `define AluSub				1
 `define AluJump				2
+//* Multiplication
+`define AluMulHigh			1
+`define AluSrc1Sign			2
 //* Compare Condition
 `define AluCompLt			1	// 0: Eq, 1: Lt
 `define AluCompNeg			2	// Negate condition 
@@ -107,8 +110,46 @@ typedef struct packed {
 
 
 
+//***** Integer Divider Operations
+typedef enum logic[`ExeOp] {
+	DIV_NOP = `ExeOpWidth'b000,
+	DIV_DIV = `ExeOpWidth'b001,
+	DIV_REM = `ExeOpWidth'b010
+} DivOp_t;
+
+//*** Sub-operations
+//* Unsigned
+`define DivUnsigned			0
+
+//*** DIV Command
+typedef struct packed {
+	logic [`ExeSubOp]		sub_op;
+	DivOp_t					op;
+} DivCommand_t;
+
+
+
 //***** FPU Operation
 
+
+
+//***** CSR Operation
+//*** Operation Type
+typedef enum logic[`ExeOp] {
+	CSR_NOP		= `ExeOpWidth'b000,
+	CSR_RW		= `ExeOpWidth'b001,
+	CSR_RS		= `ExeOpWidth'b010,	// Read and Set Bits
+	CSR_RC		= `ExeOpWidth'b011	// Read and Clear Bits
+} CsrOp_t;
+
+//*** Sub-Operations
+`define CsrImmediate		0
+
+//*** CSR Commands
+typedef struct packed {
+	logic [`ExeSubOp]		sub_op;
+	CsrOp_t					op;
+} CsrCommand_t;
 
 
 //***** Memory Unit Operation

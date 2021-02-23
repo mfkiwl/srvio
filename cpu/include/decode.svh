@@ -20,6 +20,7 @@
 `define OpCommand		`OpCommandWidth-1:0
 typedef union packed {
 	AluCommand_t		alu;
+	DivCommand_t		div;
 	MemCommand_t		mem;
 } OpCommand_t;
 
