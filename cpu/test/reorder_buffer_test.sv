@@ -38,6 +38,8 @@ module reorder_buffer_test;
 	reg				dec_jump_;
 	reg				dec_invalid;
 
+	reg [ROB-1:0]	issue_rob_id;
+
 	reg				wb_e_;
 	RegFile_t		wb_rd;
 	reg [DATA-1:0]	wb_data;
@@ -147,6 +149,8 @@ module reorder_buffer_test;
 		//*** creg
 		creg_exp_mask = `Disable;
 		creg_tvec = {30'hcafe<<2,2'b00};
+		//***
+		issue_rob_id = 1;
 		//*** decode
 		dec_clear;
 		//*** writeback

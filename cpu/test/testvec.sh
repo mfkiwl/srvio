@@ -230,6 +230,7 @@ switch ( $TOP_MODULE )
 				${CPURTLDIR}/rename_map.sv \
 				${CPURTLDIR}/rob_status.sv \
 				${CPURTLDIR}/exp_manage.sv \
+				${CPURTLDIR}/pc_buf.sv \
 				${PMRTLDIR}/regfile.sv \
 				${PMRTLDIR}/ring_buf.sv \
 				${PMRTLDIR}/cnt_bits.sv \
