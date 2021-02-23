@@ -21,7 +21,8 @@ module issue_top #(
 	input wire				reset_,
 
 	DecIsIf.issue			dec_is_if,
-	IsExeIf.issue			is_exe_if
+	IsExeIf.issue			is_exe_if,
+	PcInstIf.issue			pc_inst_if,
 );
 
 	//***** internal parameters
@@ -35,9 +36,26 @@ module issue_top #(
 	RegFile_t				ren_rs2;
 	wire					ren_rs2_ready;
 	//*** issue
+	wire					issue_e_;
+	RegFile_t				issue_rd;
 	RegFile_t				issue_rs1;
 	RegFile_t				issue_rs2;
 	ImmData_t				issue_imm;
+	ExeUnit_t				issue_unit;
+	OpCommand_t				issue_command;
+	wire [ADDR-1:0]			issue_pc;
+	wire [DATA-1:0]			issue_gpr_data1;
+	wire [DATA-1:0]			issue_gpr_data2;
+	wire [`GprAddr]			issue_gpr_addr1;
+	wire [`GprAddr]			issue_gpr_addr2;
+	wire [DATA-1:0]			issue_fpr_data1;
+	wire [DATA-1:0]			issue_fpr_data2;
+	wire [`FprAddr]			issue_fpr_addr1;
+	wire [`FprAddr]			issue_fpr_addr2;
+	wire [DATA-1:0]			issue_data1;
+	wire					issue_data1_e_;
+	wire [DATA-1:0]			issue_data2;
+	wire					issue_data2_e_;
 	//*** commit
 	wire					commit_e_;
 	wire					flush_;
@@ -53,10 +71,27 @@ module issue_top #(
 	wire					rob_busy;
 
 	//***** internal registers
+	//*** issue pipeline register
+	reg						issue_e_reg_;
+	RegFile_t				issue_rd_reg;
+	reg						issue_data1_e_reg_;
+	reg [DATA-1:0]			issue_data1_reg;
+	reg						issue_data2_e_reg_;
+	reg [DATA-1:0]			issue_data2_reg;
+	ExeUnit_t				issue_unit_reg;
+	OpCommand_t				issue_command_reg;
 
 
 
 	//***** assign output
+	assign is_exe_if.issue_e_ = issue_e_;
+	assign is_exe_if.issue_rd = issue_rd;
+	assign is_exe_if.issue_data1 = issue_data1;
+	assign is_exe_if.issue_data1_e_ = issue_data1_e_;
+	assign is_exe_if.issue_data2 = issue_data2;
+	assign is_exe_if.issue_data2_e_ = issue_data2_e_;
+	assign is_exe_if.issue_unit = issue_unit;
+	assign is_exe_if.issue_command = issue_command;
 	assign dec_is_if.is_full = is_busy || rob_busy;
 
 
@@ -92,13 +127,13 @@ module issue_top #(
 		.commit_rd		( commit_rd ),
 		.commit_rob_id	( commit_rob_id ),
 
-		.issue_e_		( is_exe_if.issue_e_ ),
-		.issue_rd		( is_exe_if.rd ),
+		.issue_e_		( issue_e_ ),
+		.issue_rd		( issue_rd ),
 		.issue_rs1		( issue_rs1 ),
 		.issue_rs2		( issue_rs2 ),
 		.issue_imm		( issue_imm ),
-		.issue_unit		( is_exe_if.unit ),
-		.issue_command	( is_exe_if.command ),
+		.issue_unit		( issue_unit ),
+		.issue_command	( issue_command ),
 
 		.busy			( is_busy )
 	);
@@ -113,6 +148,7 @@ module issue_top #(
 		.issue_rs1		( issue_rs1 ),
 		.issue_rs2		( issue_rs2 ),
 		.issue_imm		( issue_imm ),
+		.issue_pc		( issue_pc ),
 
 		.wb_e_			( is_exe_if.wb_e_ ),
 		.wb_rd			( is_exe_if.wb_rd ),
@@ -122,10 +158,20 @@ module issue_top #(
 		.commit_rob_id	( commit_rob_id ),
 		.commit_data	( commit_data ),
 
-		.rs1_data		( rs1_data ),
-		.rs2_data		( rs2_data ),
-		.rs1_addr		( rs1_addr ),
-		.rs2_addr		( rs2_addr )
+		.gpr_data1		( issue_gpr_data1 ),
+		.gpr_data2		( issue_gpr_data2 ),
+		.gpr_addr1		( issue_gpr_addr1 ),
+		.gpr_addr2		( issue_gpr_addr2 ),
+
+		.fpr_data1		( issue_fpr_data1 ),
+		.fpr_data2		( issue_fpr_data2 ),
+		.fpr_addr1		( issue_fpr_addr1 ),
+		.fpr_addr2		( issue_fpr_addr2 ),
+
+		.data1			( issue_data1 ),
+		.data1_e_		( issue_data1_e_ ),
+		.data2			( issue_data2 ),
+		.data2_e_		( issue_data2_e_ )
 	);
 
 
@@ -153,12 +199,15 @@ module issue_top #(
 		.dec_br_pred_taken_	( `Disable_ ),	// not used
 		.dec_jump_			( dec_is_if.dec_jump_ ),
 		.dec_invalid		( dec_is_if.dec_invalid ),
-		.dec_rob_id			(),	// TODO: implement PcInstIf
+		.dec_rob_id			( pc_inst_if.dec_rob_id ),
 		.ren_rd				( ren_rd ),
 		.ren_rs1			( ren_rs1 ),
 		.ren_rs1_ready		( ren_rs1_ready ),
 		.ren_rs2			( ren_rs2 ),
 		.ren_rs2_ready		( ren_rs2_ready ),
+
+		.issue_rob_id		( issue_rd.addr[ROB-1:0] ),
+		.issue_pc			( issue_pc ),
 
 		.wb_e_				( is_exe_if.wb_e_ ),
 		.wb_rd				( is_exe_if.wb_rd ),
@@ -185,8 +234,58 @@ module issue_top #(
 
 	//***** register files
 	cpu_regfiles #(
-		.DATA		( DATA ),
+		.DATA				( DATA ),
 	) cpu_regfiles (
+		.clk				( clk ),
+		.issue_gpr_addr1	( issue_gpr_addr1 ),
+		.issue_gpr_addr2	( issue_gpr_addr2 ),
+		.issue_gpr_data1	( issue_gpr_data1 ),
+		.issue_gpr_data2	( issue_gpr_data2 ),
+
+		.issue_fpr_addr1	( issue_fpr_addr1 ),
+		.issue_fpr_addr2	( issue_fpr_addr2 ),
+		.issue_fpr_data1	( issue_fpr_data1 ),
+		.issue_fpr_data2	( issue_fpr_data2 ),
+
+		.commit_e_			( commit_e_ ),
+		.commit_rd			( commit_rd ),
+		.commit_data		( commit_data )
 	);
+
+
+
+	//*****
+	always_ff @( posedge clk or negedge reset_ ) begin
+		if ( reset_ == `Enable_ ) begin
+			issue_e_reg_ <= `Disable_;
+			issue_rd_reg <= 0;
+			issue_data1_e_reg_ <= `Disable_;
+			issue_data1_reg <= 0;
+			issue_data2_e_reg_ <= `Disable_;
+			issue_data2_reg <= 0;
+			issue_unit_reg <= UNIT_NOP;
+			issue_command_reg <= 0;
+		end else begin
+			if ( flush_ == `Enable_ ) begin
+				issue_e_reg_ <= `Disable_;
+				issue_rd_reg <= 0;
+				issue_data1_e_reg_ <= `Disable_;
+				issue_data1_reg <= 0;
+				issue_data2_e_reg_ <= `Disable_;
+				issue_data2_reg <= 0;
+				issue_unit_reg <= UNIT_NOP;
+				issue_command_reg <= 0;
+			end else begin
+				issue_e_reg_ <= issue_e_;
+				issue_rd_reg <= issue_rd;
+				issue_data1_e_reg_ <= issue_data1_e_;
+				issue_data1_reg <= issue_data1;
+				issue_data2_e_reg_ <= issue_data2_e_;
+				issue_data2_reg <= issue_data2;
+				issue_unit_reg <= issue_unit;
+				issue_command_reg <= issue_command;
+			end
+		end
+	end
 
 endmodule

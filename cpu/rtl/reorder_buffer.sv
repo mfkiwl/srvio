@@ -41,6 +41,9 @@ module reorder_buffer #(
 	output RegFile_t		ren_rs2,
 	output wire				ren_rs2_ready,
 
+	input wire [ROB-1:0]	issue_rob_id,
+	output wire [ADDR-1:0]	issue_pc,
+
 	input wire				wb_e_,
 	input RegFile_t			wb_rd,
 	input wire [DATA-1:0]	wb_data,
@@ -138,6 +141,9 @@ module reorder_buffer #(
 		.ren_rs2		( ren_rs2 ),
 		.ren_rs1_ready	( ren_rs1_ready ),
 		.ren_rs2_ready	( ren_rs2_ready ),
+
+		.issue_rob_id	( issue_rob_id ),
+		.issue_pc		( issue_pc ),
 
 		.wb_e_			( wb_e_ ),
 		.wb_rob_id		( wb_rob_id ),

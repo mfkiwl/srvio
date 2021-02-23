@@ -37,6 +37,9 @@ module rob_status #(
 	output wire				ren_rs1_ready,
 	output wire				ren_rs2_ready,
 
+	input wire [ROB-1:0]	issue_rob_id,
+	output wire [ADDR-1:0]	issue_pc,
+
 	input wire				wb_e_,
 	input wire [ROB-1:0]	wb_rob_id,
 	input wire				wb_exp_,
@@ -57,7 +60,7 @@ module rob_status #(
 
 	//***** internal types
 	typedef struct packed {
-		logic [ADDR-1:0]	pc;
+		//logic [ADDR-1:0]	pc;
 		RegFile_t			rd;
 		logic				br_inst_;
 		logic				br_pred_taken_;
@@ -87,6 +90,7 @@ module rob_status #(
 	RobStat_t				wb_rob_stat;
 	//*** commit
 	wire					com_br_;
+	wire [ADDR-1:0]			com_pc_out;
 	wire					com_jump_;
 	wire					com_br_miss_;
 	wire					com_jump_miss_;
@@ -110,7 +114,7 @@ module rob_status #(
 	assign com_pc = 
 		( commit_e_ )
 			? 0
-			: com_rob_info.pc;
+			: com_pc_out;
 	assign com_rd = 
 		( commit_e_ )
 			? 0
@@ -124,7 +128,8 @@ module rob_status #(
 			? EXP_I_MISS_ALIGN
 			: com_rob_stat.exp_code;
 `else
-	assign com_pc = com_rob_info.pc;
+	//assign com_pc = com_rob_info.pc;
+	assign com_pc = com_pc_out;
 	assign com_rd = com_rob_info.rd;
 	assign com_exp_ = com_rob_stat.exp_;
 	assign com_exp_code = com_rob_stat.exp_code;
@@ -138,7 +143,7 @@ module rob_status #(
 	//***** internal assign
 	//*** decode
 	assign dec_rob_info = '{
-		pc : dec_pc,
+		//pc : dec_pc,
 		rd : dec_rd,
 		br_inst_ : dec_br_,
 		br_pred_taken_ : dec_br_pred_taken_,
@@ -160,6 +165,27 @@ module rob_status #(
 
 
 	//***** instruction information
+	wire			dummy_wv1, dummy_rv1;
+	pc_buf #(
+		.DATA		( ADDR ),
+		.DEPTH		( ROB_DEPTH ),
+		.READ		( 1 ),
+		.WRITE		( 1 ),
+		.ACT		( `Low )
+	) pc_buf (
+		.clk		( clk ),
+		.reset_		( reset_ ),
+		.flush_		( flush_ ),
+
+		.we			( dec_e_ ),
+		.wd			( dec_pc ),
+		.re			( commit_e_ ),
+		.rd			( com_pc_out ),
+
+		.issue_id	( issue_rob_id ),
+		.issue_pc	( issue_pc )
+	);
+
 	wire			dummy_wv, dummy_rv;
 	ring_buf #(
 		.DATA		( ROB_INFO ),
@@ -174,12 +200,12 @@ module rob_status #(
 		.we			( dec_e_ ),
 		.wd			( dec_rob_info ),
 		.widx		( dec_rob_id ),
-		.wv			( dummy_wv ),
+		.wv			( dummy_wv2 ),
 
 		.re			( commit_e_ ),
 		.rd			( com_rob_info ),
 		.ridx		( com_rob_id ),
-		.rv			( dummy_rv ),
+		.rv			( dummy_rv2 ),
 
 		.busy		( busy_ )
 	);

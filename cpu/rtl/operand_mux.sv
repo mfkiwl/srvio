@@ -20,6 +20,7 @@ module operand_mux #(
 	input RegFile_t			issue_rs1,
 	input RegFile_t			issue_rs2,
 	input ImmData_t			issue_imm,
+	input wire [ADDR-1:0]	issue_pc,
 
 	input wire				wb_e_,
 	input RegFile_t			wb_rd,
@@ -103,12 +104,12 @@ module operand_mux #(
 	assign packed_data1 =
 		sel_data(
 			issue_rs1, bypass_data1, bypass1_e_,
-			gpr_data1, fpr_data1, pc, imm_data
+			gpr_data1, fpr_data1, issue_pc, imm_data
 		);
 	assign packed_data2 =
 		sel_data(
 			issue_rs2, bypass_data2, bypass2_e_,
-			gpr_data2, fpr_data2, pc, imm_data
+			gpr_data2, fpr_data2, issue_pc, imm_data
 		);
 
 	//*** select function
