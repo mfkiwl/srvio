@@ -53,12 +53,13 @@ typedef enum {
 	BR_PRED_CNT			= 0,
 	BR_PRED_CORRELATE	= 1,
 	BR_PRED_GSHARE		= 2,
-	BR_PRED_TAGE		= 3
+	BR_PRED_PERCEPTRON	= 3,
+	BR_PRED_TAGE		= 4
 } BrPredType_t;
 `define PredType		BR_PRED_CNT				// predictor select
 
 //*** Branch Target Buffer Configuration
-`define BtbTableDepth	256						// BTB Entry Depth
+`define BtbDepth		256						// BTB Entry Depth
 `define BtbCntWidth		2						// BTB confidence couter
 
 //*** Return Address Stack Configuration
