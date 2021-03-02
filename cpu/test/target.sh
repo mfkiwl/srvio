@@ -11,5 +11,5 @@
 #set DEFAULT_DESIGN = "exp_manage"
 #set DEFAULT_DESIGN = "reorder_buffer"
 #set DEFAULT_DESIGN = "inst_sched"
-#set DEFAULT_DESIGN = "inst_queue"
-set DEFAULT_DESIGN = "alu_top"
+set DEFAULT_DESIGN = "inst_queue"
+#set DEFAULT_DESIGN = "alu_top"

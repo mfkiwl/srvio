@@ -440,6 +440,30 @@ switch( $SIM_TOOL )
 		end
 	breaksw
 
+	case "xilinx_sim" :
+		if ( $Waves =~ 1 ) then
+			set WaveOpt = (-d VCD)
+		endif
+
+		set SIM_OPT = ( \
+			$WaveOpt \
+		)
+
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				--define $def \
+				$DEFINES \
+			)
+		end
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				--include $dir \
+				$INCLUDE \
+			)
+		end
+	breaksw
+
 	default :
 		echo "Simulation Tool is not selected"
 		exit 1
@@ -450,10 +474,23 @@ endsw
 ##############################
 #       run simulation       #
 ##############################
-${SIM_TOOL} \
-	${SIM_OPT} \
-	${SRC_EXT} \
-	${INCLUDE} \
-	${DEFINES} \
-	${TEST_FILE} \
-	${RTL_FILE}
+if ( ${SIM_TOOL} =~ "xilinx_sim" ) then
+	xvlog \
+		--sv \
+		${SIM_OPT} \
+		${INCLUDE} \
+		${DEFINES} \
+		${TEST_FILE} \
+		${RTL_FILE}
+
+	xelab ${TOP_MODULE}_test
+	xsim --R ${TOP_MODULE}_test
+else
+	${SIM_TOOL} \
+		${SIM_OPT} \
+		${SRC_EXT} \
+		${INCLUDE} \
+		${DEFINES} \
+		${TEST_FILE} \
+		${RTL_FILE}
+endif

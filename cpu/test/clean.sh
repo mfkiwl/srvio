@@ -49,4 +49,16 @@ else if ( $SIM_TOOL =~ "vcs" ) then
 		rm -rf $simdir
 	end
 else if ( $SIM_TOOL =~ "verilator" ) then
+else if ( $SIM_TOOL =~ "xilinx_sim" ) then
+	rm -f webtalk*.jou >& /dev/null
+	rm -f webtalk*.log >& /dev/null
+	rm -f xsim*.jou >& /dev/null
+	rm -f xsim*.log >& /dev/null
+	rm -f xelab.log
+	rm -f xelab.pb
+	rm -f xvlog.log
+	rm -f xvlog.pb
+	rm -f waves.vcd
+	rm -rf .Xil
+	rm -rf xsim.dir
 endif
