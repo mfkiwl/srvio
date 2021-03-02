@@ -58,6 +58,7 @@ module issue_top #(
 	wire					issue_data2_e_;
 	//*** commit
 	wire					commit_e_;
+	wire					commit_jump_;
 	wire					flush_;
 	wire [ADDR-1:0]			commit_pc;
 	RegFile_t				commit_rd;
@@ -218,6 +219,7 @@ module issue_top #(
 		.wb_jump_miss_		( is_exe_if.wb_jump_miss_ ),
 
 		.commit_e_			( commit_e_ ),
+		.commit_jump_		( commit_jump_ ),
 		.flush_				( flush_ ),
 		.commit_pc			( commit_pc ),
 		.commit_rd			( commit_rd ),
@@ -248,8 +250,10 @@ module issue_top #(
 		.issue_fpr_data2	( issue_fpr_data2 ),
 
 		.commit_e_			( commit_e_ ),
+		.commit_jump_		( commit_jump_ ),
 		.commit_rd			( commit_rd ),
-		.commit_data		( commit_data )
+		.commit_data		( commit_data ),
+		.commit_pc			( commit_pc )
 	);
 
 

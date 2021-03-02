@@ -1,5 +1,5 @@
 /*
-* <complex_dec.sv>
+* <csr_access_top.sv>
 * 
 * Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
 * 
@@ -10,8 +10,7 @@
 `include "stddef.vh"
 `include "cpu_config.svh"
 
-module compex_dec #(
-	parameter ADDR = `AddrWidth,
+module csr_access_top #(
 	parameter DATA = `DataWidth
 )(
 );

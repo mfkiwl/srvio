@@ -8,180 +8,125 @@
 */
 
 `include "stddef.vh"
-`include "cpu_config.h"
+`include "cpu_config.svh"
+`include "branch.svh"
 
 module br_pred_cnt #(
 	parameter ADDR = `AddrWidth,
-	parameter CNTW = `PredCntWidth,
-	parameter PRED_D = `PredMaxDepth,
-	parameter PRT_D = `PredTableDepth,
-	parameter SIMBRF = `SimBrFetch,
-	parameter SIMBRCOM = `SimBrCommit,
-	parameter OUTREG = `Enable
+	parameter CNT = `PredCntWidth,
+	parameter DEPTH = `PredTableDepth,
+	parameter PRED_MAX = `PredMaxDepth
 )(
-	input wire						clk,
-	input wire						reset_,
-	input wire						flush_,
+	input wire				clk,
+	input wire				reset_,
 
-	/***** prediction *****/
-	input wire [SIMBRF-1:0]			br_,
-	input wire [SIMBRF*ADDR-1:0]	br_addr,
-	output wire [SIMBRF-1:0]		pred_taken,
+	input wire				flush_,
 
-	/***** feedback and train *****/
-	input wire [SIMBRCOM-1:0]		br_commit_,
-	input wire [SIMBRCOM-1:0]		br_taken_,
-	input wire [SIMBRCOM-1:0]		br_pred_miss_
+	input wire				br_,
+	input wire [ADDR-1:0]	br_pc,
+	output wire				br_pred,
 
-	/***** status *****/
-	//,output wire						busy
+	input wire				br_commit_,
+	input wire				br_result,
+	input wire				br_pred_miss_
 );
 
-	/***** internal parameter *****/
-	localparam TBL_IDX = $clog2(PRT_D);			// table index
-	localparam HISTORY = TBL_IDX + 1;			// prediction history
+	//***** internal parameters
+	localparam PTR = $clog2(DEPTH);
+	localparam HISTROY = PTR + 1;			// prediction + index
 	localparam CNT_MAX = {CNTW{1'b1}};
 	localparam CNT_MIN = {CNTW{1'b0}};
-	localparam CNT_DEF = ( CNT_MAX / 2 ) + 1;	// weakly taken
-	localparam INCR = $clog2(SIMBRCOM) + 1;		// increment value of counter
-	localparam BYTE = `ByteBitWidth;			// just an alias...
-	localparam ADDR_OFS = $clog2(`InstWidth/BYTE); // # of lower bits ignored
-	/***** registers *****/
-	reg [CNTW-1:0]				cnt [PRT_D-1:0];
-	reg	[SIMBRF-1:0]			reg_pred;
-	/***** wires *****/
-	/* prediction */
-	wire [HISTORY*SIMBRF-1:0]	wr_hist;				// write history
-	wire [TBL_IDX-1:0]			pred_idx [SIMBRF-1:0];	// idx for prediction
-	wire [SIMBRF-1:0]			pred_taken_wire;		// Prediction result
-	/* train */
-	wire [HISTORY*SIMBRCOM-1:0]	rd_hist;				// read history
-	wire [TBL_IDX-1:0]			tr_idx [SIMBRCOM-1:0];	// idx for train
-	wire [SIMBRCOM-1:0]			tr_pred_taken;			// prediction for train
-	wire [TBL_IDX*SIMBRCOM-1:0]	tr_idx_conc;			// concatenated
-	wire [SIMBRCOM-1:0]			taken;					// result is taken
+	localparam CNT_DEF = ( CNT_MAX / 2 );	// weakly taken
+	localparam BYTE = `ByteBitWidth;
+	localparam ADDR_OFS = $clog2(`InstWidth/BYTE);
+
+	//***** internal registers
+	reg [CNT-1:0]			cnt [DEPTH-1:0];
+
+	//***** internal wires
+	//*** prediction
+	wire [PTR-1:0]			pred_ptr;
+	wire [CNT-1:0]			pred_cnt;
+	wire [HISTORY-1:0]		wr_hist;
+	//*** update
+	wire					tr_pred;
+	wire [PTR-1:0]			tr_ptr;
+	wire [HISTORY-1:0]		rd_hist;
+
+	//***** combinational cells
+	logic [CNT-1:0]			next_cnt [DEPTH-1:0];
 
 
-	/***** output *****/
-	//assign pred_taken = OUTREG ? reg_pred : pred_taken_wire;
-	generate
-		if ( OUTREG ) begin : outreg
-			assign pred_taken = reg_pred;
-		end else begin : no_outreg
-			assign pred_taken = pred_taken_wire;
-		end
-	endgenerate
+
+	//***** assign output
+	assign br_pred = pred_cnt[CNT-1];
 
 
-	/***** generate index for prediciton *****/
-	generate
-		genvar gp;
-		for ( gp = 0; gp < SIMBRF; gp = gp + 1 ) begin : Loop_idx
-			wire [ADDR-1:0]		addr_each;
-			wire [TBL_IDX-1:0]	idx_each;
-			wire [CNTW-1:0]		cnt_each;
-			// address to index
-			assign addr_each = br_addr[`RangeG(gp,ADDR)];
-			assign idx_each = addr_each[TBL_IDX+ADDR_OFS-1:ADDR_OFS];
-			assign cnt_each = cnt[idx_each];
 
-			// output
-			assign pred_idx[gp] = idx_each;
-			assign pred_taken_wire[gp] = cnt_each[CNTW-1];
-		end
-	endgenerate
+	//***** assign interanl 
+	assign pred_ptr = br_pc[PTR+ADDR_OFS-1:ADDR_OFS];
+	assign pred_cnt = cnt[pred_ptr];
+	assign wr_hist = {br_pred, pred_ptr};
+	assign {tr_pred, tr_ptr} = rd_hist;
 
 
-	/***** read/write prediction history for train *****/
-	/* warning: saved prediction in pred_history is not actually used. 
-				It still remains in this code just in case.  */
-	generate
-		genvar gi, gj;
-		/* on prediction */
-		for ( gi = 0; gi < SIMBRF; gi = gi + 1 ) begin : Loop_pred
-			wire				pred_each;
-			wire [TBL_IDX-1:0]	idx_each;
-			assign pred_each = pred_taken_wire[gi];
-			assign idx_each = pred_idx[gi];
-			assign wr_hist[`RangeG(gi,HISTORY)] = {pred_each, idx_each};
-		end
 
-		/* on training */
-		for ( gj = 0; gj < SIMBRCOM; gj = gj + 1 ) begin : Loop_Tr
-			wire				pred_each;
-			wire [TBL_IDX-1:0]	idx_each;
-			assign tr_idx[gj] = idx_each;
-			assign tr_pred_taken[gj] = pred_each;
-			assign tr_idx_conc[`RangeG(gj,TBL_IDX)] = idx_each;
-			assign {pred_each, idx_each} = rd_hist[`RangeG(gj,HISTORY)];
-		end
-	endgenerate
-
-	/* history buffer */
-	wire [SIMBRCOM-1:0]	dummy_v;
+	//***** History buffer
+	wire				dummy_v;
 	wire				dummy_busy;
 	fifo #(
 		.DATA		( HISTORY ),
-		.DEPTH		( PRED_D ),
+		.DEPTH		( DEPTH ),
 		.BUF_EXT	( `Disable ),
-		.READ		( SIMBRCOM ),
-		.WRITE		( SIMBRF ),
+		.READ		( 1 ),
+		.WRITE		( 1 ),
 		.ACT		( `Low )
 	) pred_history (
 		.clk		( clk ),
 		.reset_		( reset_ ),
-		.flush_		( flush_ ),
+		.flush_		( flush_ ), 
 		.we			( br_ ),
 		.wd			( wr_hist ),
 		.re			( br_commit_ ),
 		.rd			( rd_hist ),
 		.v			( dummy_v ),
 		.busy		( dummy_busy )
-		//.busy		( busy )
 	);
 
 
-	/***** update prediction counter *****/
-	//assign taken = tr_pred_taken ^ ~br_pred_miss_;
-	function [CNTW-1:0] update_cnt;
-		input [TBL_IDX-1:0]				idx;
-		input [CNTW-1:0]				current;
-		input [SIMBRCOM-1:0]			br_;
-		input [SIMBRCOM-1:0]			taken_;
-		input [SIMBRCOM*TBL_IDX-1:0]	tr_idx;
-		reg [CNTW-1:0]					cnt;
-		integer i;
-		begin
-			cnt = current;
-			for ( i = 0; i < SIMBRCOM; i = i + 1 ) begin
-				if ( ( idx == tr_idx[`RangeF(i,TBL_IDX)] ) && !br_[i] ) begin
-					if ( taken_[i] == `Enable_ ) begin
-						//cnt = ( cnt == CNT_MAX ) ? CNT_MAX : cnt + 1'b1;
-						cnt = `CntUp(cnt,CNT_MAX,1'b1);
-					end else begin
-						//cnt = ( cnt == CNT_MIN ) ? CNT_MIN : cnt - 1'b1;
-						cnt = `CntDwn(cnt,CNT_MIN,1'b1);
-					end
+
+	//***** combinational logics
+	int ci;
+	always_comb begin
+		for ( ci = 0; ci < DEPTH; ci = ci + 1 ) begin
+			if ( !br_commit_ && ( ci == tr_ptr ) ) begin
+				if ( br_result == `BrTaken ) begin
+					// branch taken
+					next_cnt =
+						( cnt[ci] == CNT_MIN ) ? CNT_MIN : cnt[ci] - 1'b1;
+				end else begin
+					// branch not taken
+					next_cnt =
+						( cnt[ci] == CNT_MAX ) ? CNT_MAX : cnt[ci] + 1'b1;
 				end
+			end else begin
+				next_cnt[ci] = cnt[ci];
 			end
-			update_cnt = cnt;
 		end
-	endfunction
+	end
 
 
-	/***** Sequential logics *****/
-	integer i;
-	always @( posedge clk or negedge reset_ ) begin
+
+	//***** sequential Logics
+	int i;
+	always_ff @( posedge clk or negedge reset_ ) begin
 		if ( reset_ == `Enable_ ) begin
-			reg_pred <= {SIMBRF{`Disable_}};
-			for ( i = 0; i < PRT_D; i = i + 1 ) begin
+			for ( i = 0; i < DEPTH; i = i + 1 ) begin
 				cnt[i] <= CNT_DEF;
 			end
 		end else begin
-			reg_pred <= pred_taken_wire;
-			for ( i = 0; i < PRT_D; i = i + 1 ) begin
-				cnt[i] <= update_cnt(i, cnt[i], 
-							br_commit_, br_taken_, tr_idx_conc);
+			for ( i = 0; i < DEPTH; i = i + 1 ) begin
+				cnt[i] <= next_cnt[i];
 			end
 		end
 	end

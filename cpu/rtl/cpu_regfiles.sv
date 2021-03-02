@@ -29,15 +29,27 @@ module cpu_regfiles #(
 	input wire [`FprAddr]	issue_fpr_data2,
 
 	input wire				commit_e_,
+	input wire				commit_jump_,
 	input wire RegFile_t	commit_rd,
-	input wire [DATA-1:0]	commit_data
+	input wire [DATA-1:0]	commit_data,
+	input wire [ADDR-1:0]	commit_pc
 );
+
+	//***** internal wires
+	wire [DATA-1:0]			pc_p4;
+	wire [DATA-1:0]			gpr_update_data;
 
 	//***** combinational cells
 	logic					gpr_we_;
 	logic [`GprAddr]		gpr_waddr;
 	logic					fpr_we_;
 	logic [`FprAddr]		fpr_waddr;
+
+
+
+	//***** internal assign
+	assign pc_p4 = commit_pc + 4;
+	assign gpr_update_data = ( commit_jump_ ) ? commit_data : pc_p4;
 
 
 
@@ -54,7 +66,7 @@ module cpu_regfiles #(
 		.raddr		( {issue_gpr_addr2, issue_gpr_addr1} ),
 		.waddr		( gpr_addr ),
 		.we_		( gpr_we_ ),
-		.wdata		( commit_data ),
+		.wdata		( gpr_update_data ),
 		.rdata		( {issue_gpr_data2, issue_gpr_data1} )
 	);
 

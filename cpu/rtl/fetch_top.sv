@@ -32,8 +32,9 @@ module fetch_top #(
 	//) fetch_pc_sel (
 	//);
 
-	//fetch_iag #(
-	//) fetch_iag (
-	//);
+	//***** Instruction address generator
+	fetch_iag #(
+	) fetch_iag (
+	);
 
 endmodule

@@ -31,7 +31,7 @@ module reorder_buffer #(
 	input RegFile_t			dec_rs1,
 	input RegFile_t			dec_rs2,
 	input wire				dec_br_,
-	input wire				dec_br_pred_taken_,
+	input wire				dec_br_pred,
 	input wire				dec_jump_,
 	input wire				dec_invalid,
 	output wire [ROB-1:0]	dec_rob_id,
@@ -41,8 +41,8 @@ module reorder_buffer #(
 	output RegFile_t		ren_rs2,
 	output wire				ren_rs2_ready,
 
-	input wire [ROB-1:0]	issue_rob_id,
-	output wire [ADDR-1:0]	issue_pc,
+	input wire [ROB-1:0]	issue_rob_id,	// For issued instructions
+	output wire [ADDR-1:0]	issue_pc,		//    replace TYPE_PC operands
 
 	input wire				wb_e_,
 	input RegFile_t			wb_rd,
@@ -53,6 +53,7 @@ module reorder_buffer #(
 	input wire				wb_jump_miss_,
 
 	output wire				commit_e_,
+	output wire				commit_jump_,
 	output wire				flush_,
 	output wire [ADDR-1:0]	commit_pc,
 	output RegFile_t		commit_rd,
@@ -132,7 +133,7 @@ module reorder_buffer #(
 		.dec_pc			( dec_pc ),
 		.dec_rd			( dec_rd ),
 		.dec_br_		( dec_br_ ),
-		.dec_br_pred_taken_	( dec_br_pred_taken_ ),
+		.dec_br_pred	( dec_br_pred ),
 		.dec_jump_		( dec_jump_ ),
 		.dec_invalid	( dec_invalid ),
 		.dec_rob_id		( dec_rob_id ),
@@ -153,6 +154,7 @@ module reorder_buffer #(
 		.wb_jump_miss_	( wb_jump_miss_ ),
 
 		.commit_e_		( commit_e_ ),
+		.com_jump_		( commit_jump_ ),
 		.flush_			( flush_ ),
 		.com_pc			( commit_pc ),
 		.com_rd			( commit_rd ),

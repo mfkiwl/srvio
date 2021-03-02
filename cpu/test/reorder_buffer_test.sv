@@ -34,11 +34,12 @@ module reorder_buffer_test;
 	RegFile_t		dec_rs1;
 	RegFile_t		dec_rs2;
 	reg				dec_br_;
-	reg				dec_br_pred_taken_;
+	reg				dec_br_pred;
 	reg				dec_jump_;
 	reg				dec_invalid;
 
 	reg [ROB-1:0]	issue_rob_id;
+	wire [ADDR-1:0]	issue_pc;
 
 	reg				wb_e_;
 	RegFile_t		wb_rd;
@@ -55,6 +56,7 @@ module reorder_buffer_test;
 	wire			ren_rs2_ready;
 	RegFile_t		ren_rd;
 	wire			commit_e_;
+	wire			commit_jump_;
 	wire			flush_;
 	wire [ADDR-1:0]	commit_pc;
 	RegFile_t		commit_rd;
@@ -128,7 +130,7 @@ module reorder_buffer_test;
 		dec_rs1 = 0;
 		dec_rs2 = 0;
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = 0;
 	endtask
@@ -171,7 +173,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 2};
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 3};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -201,7 +203,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 3};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -229,7 +231,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 2};
 		dec_br_ = `Enable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -257,7 +259,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 2};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Enable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -285,7 +287,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 2};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Enable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -317,7 +319,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 0};
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 0};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -328,7 +330,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// rename to rob[0]
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 0};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -339,7 +341,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// rename to rob[0]
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 2};	// rename to rob[1]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -350,7 +352,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 2};	// rename to rob[1]
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 3}; 	// rename to rob[2]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -361,7 +363,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 3};	// rename to rob[2]
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 1};	// rename to rob[0]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -372,7 +374,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 5};	// rename to rob[4]
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 3};	// rename to rob[2]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -383,7 +385,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 4};	// rename to rob[5]
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 3};	// rename to rob[2]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -394,7 +396,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 6};	// not renamed
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 2};	// rename to rob[6]
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(dec_rob_id);
@@ -439,7 +441,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 0};
 		dec_rs2 = '{regtype: TYPE_IMM, addr: 0};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -451,7 +453,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// must not be renamed
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 1};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);
@@ -472,7 +474,7 @@ module reorder_buffer_test;
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};	// must not be renamed
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 1};
 		dec_br_ = `Disable_;
-		dec_br_pred_taken_ = `Disable_;
+		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
 		rob_id_history.push_back(ren_rd);

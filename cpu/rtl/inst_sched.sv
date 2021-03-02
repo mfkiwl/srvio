@@ -383,12 +383,12 @@ module inst_sched #(
 		input ExeUnit_t		unit
 	);
 		case ( unit )
-			UNIT_ALU : check_reg_cnt = `ALU_LATENCY;
-			UNIT_DIV : check_reg_cnt = `DIV_LATENCY;
-			UNIT_FPU : check_reg_cnt = `FPU_LATENCY;
-			UNIT_FDIV : check_reg_cnt = `FDIV_LATENCY;
-			UNIT_CSR : check_reg_cnt = `CSR_LATENCY;
-			UNIT_MEM : check_reg_cnt = `MEM_LATENCY;
+			UNIT_ALU : check_reg_cnt = `AluLatency;
+			UNIT_DIV : check_reg_cnt = `DivLatency;
+			UNIT_FPU : check_reg_cnt = `FpuLatency;
+			UNIT_FDIV : check_reg_cnt = `FdivLatency;
+			UNIT_CSR : check_reg_cnt = `CsrLatency;
+			UNIT_MEM : check_reg_cnt = `MemLatency;
 			default : check_reg_cnt = 0;
 		endcase
 	endfunction

@@ -7,63 +7,64 @@
 * https://opensource.org/licenses/mit-license.php
 */
 
-`include "stddef.h"
-`include "cpu_config.h"
+`include "stddef.vh"
+`include "cpu_config.svh"
 
 module br_predictor #(
 	parameter ADDR = `AddrWidth,
-	parameter PRED_D = `PredMaxDepth,
-	parameter PRT_D = `PredTableDepth, 
-	parameter PREDICTOR = `PredType
+	parameter CNT = `PredCntWidth,
+	parameter DEPTH = `PredTableDepth, 
+	parameter PRED_MAX = `PredMaxDepth,
+	parameter BrPredType_t PREDICTOR = BR_PRED_CNT
 )(
 	input wire						clk,
 	input wire						reset_,
+
 	input wire						flush_,
 
 	// prediction
-	input wire [SIMBRF-1:0]			br_,
-	input wire [SIMBRF*ADDR-1:0]	br_addr,
-	output wire [SIMBRF-1:0]		pred_taken,
+	input wire						br_,
+	input wire [ADDR-1:0]			br_pc,
+	output wire						br_pred,
 
 	// feedback and train
-	input wire [SIMBRCOM-1:0]		br_commit_,
-	input wire [SIMBRCOM-1:0]		br_taken_,
-	input wire [SIMBRCOM-1:0]		br_pred_miss_
+	input wire						br_commit_,
+	input wire 						br_result,
+	input wire 						br_pred_miss_
 );
 
 	//***** select branch predictor
 	generate
 		case ( PREDICTOR )
-			`PredSatCnt : begin : cnt
+			BR_PRED_CNT : begin : cnt
 				br_pred_cnt #(
 					.ADDR		( ADDR ),
-					.PRED_D		( PRED_D ),
-					.PRT_D		( PRT_D ),
-					.SIMBRF		( SIMBRF ),
-					.SIMBRCOM	( SIMBRCOM ),
-					.OUTREG		( `Enable )
+					.CNT		( CNT ),
+					.DEPTH		( DEPTH ),
+					.PRED_MAX	( PRED_MAX )
 				) predictor (
 					.clk			( clk ),
 					.reset_			( reset_ ),
+
 					.flush_			( flush_ ),
+
 					.br_			( br_ ),
-					.br_addr		( br_addr ),
-					.pred_taken		( pred_taken ),
+					.br_pc			( br_pc ),
+					.br_pred		( br_pred ),
+
 					.br_commit_		( br_commit_ ),
-					.br_taken_		( br_taken_ ),
+					.br_result		( br_result ),
 					.br_pred_miss_	( br_pred_miss_ )
-					//,.busy			( busy )	// may be managed by upper layer
 				);
 			end
-			`PredCorrelate : begin : correlating
+
+			BR_PRED_CORRELATE : begin : correlating
 			end
-			`PredTournament : begin : tournament
+			BR_PRED_GSHARE : begin : tournament
 			end
-			`PredGshare : begin : gshare
+			BR_PRED_PERCEPTRON : begin : gshare
 			end
-			`PredPerceptron : begin : Perceptron
-			end
-			`PredTage : begin : TAGE
+			BR_PRED_TAGE : begin : TAGE
 			end
 		endcase
 	endgenerate

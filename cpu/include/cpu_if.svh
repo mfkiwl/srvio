@@ -14,11 +14,9 @@
 `include "stddef.vh"
 `include "cpu_config.svh"
 `include "regfile.svh"
-`include "alu.svh"
-`include "mem.svh"
+`include "exe.svh"
 `include "decode.svh"
 `include "issue.svh"
-`include "exe.svh"
 
 
 
@@ -36,11 +34,13 @@ interface ICacheFetchIf #(
 	//*** Fetch Stage to ICache
 	logic				fetch_e_;
 	logic [ADDR-1:0]	fetch_pc;
+	logic				flush_;
 
 	//*** Instruction Cache side signals
 	modport icache(
 		input	fetch_e_,
 		input	fetch_pc,
+		input	flush_,
 		output	ic_e_,
 		output 	ic_pc,
 		output 	ic_inst
@@ -52,7 +52,8 @@ interface ICacheFetchIf #(
 		input 	ic_pc,
 		input 	ic_inst,
 		output	fetch_e_,
-		output	fetch_pc
+		output	fetch_pc,
+		output	flush_
 	);
 
 endinterface : ICacheFetchIf
@@ -100,12 +101,12 @@ interface DecIsIf #(
 
 	//*** Decode to Issue
 	logic				dec_e_;
-	loigc [ADDR-1:0]	dec_pc;
+	logic [ADDR-1:0]	dec_pc;
 	RegFile_t			dec_rd;
 	RegFile_t			dec_rs1;
 	RegFile_t			dec_rs2;
 	logic				dec_br_;
-	logic				dec_br_pred_taken_;
+	logic				dec_br_pred;
 	logic				dec_jump_;
 	logic				dec_invalid;
 	ImmData_t			dec_imm;
@@ -123,7 +124,7 @@ interface DecIsIf #(
 		output	dec_rs1,
 		output	dec_rs2,
 		output	dec_br_,
-		output	dec_br_pred_taken_,
+		output	dec_br_pred,
 		output	dec_jump_,
 		output	dec_invalid,
 		output	dec_imm,
@@ -138,7 +139,7 @@ interface DecIsIf #(
 		input	dec_rs1,
 		input	dec_rs2,
 		input	dec_br_,
-		input	dec_br_pred_taken_,
+		input	dec_br_pred,
 		input	dec_jump_,
 		input	dec_invalid,
 		input	dec_imm,
@@ -182,45 +183,45 @@ interface IsExeIf #(
 	ExeBusy_t			exe_busy;
 
 	modport issue (
-		input	pre_wb_e_;
-		input	pre_wb_rd;
-		input	wb_e_;
-		input	wb_rd;
-		input	wb_data;
-		input	wb_exp_;
-		input	wb_exp_code;
-		input	wb_pred_miss_;
-		input	wb_jump_miss_;
-		input	exe_busy;
-		output	issue_e_;
-		output	issue_rd;
-		output	issue_data1;
-		output	issue_data1_e_;
-		output	issue_data2;
-		output	issue_data2_e_;
-		output	issue_unit;
-		output	issue_command;
+		input	pre_wb_e_,
+		input	pre_wb_rd,
+		input	wb_e_,
+		input	wb_rd,
+		input	wb_data,
+		input	wb_exp_,
+		input	wb_exp_code,
+		input	wb_pred_miss_,
+		input	wb_jump_miss_,
+		input	exe_busy,
+		output	issue_e_,
+		output	issue_rd,
+		output	issue_data1,
+		output	issue_data1_e_,
+		output	issue_data2,
+		output	issue_data2_e_,
+		output	issue_unit,
+		output	issue_command
 	);
 
 	modport exe (
-		input	issue_e_;
-		input	issue_rd;
-		input	issue_data1;
-		input	issue_data1_e_;
-		input	issue_data2;
-		input	issue_data2_e_;
-		input	issue_unit;
-		input	issue_command;
-		output	pre_wb_e_;
-		output	pre_wb_rd;
-		output	wb_e_;
-		output	wb_rd;
-		output	wb_data;
-		output	wb_exp_;
-		output	wb_exp_code;
-		output	wb_pred_miss_;
-		output	wb_jump_miss_;
-		output	exe_busy;
+		input	issue_e_,
+		input	issue_rd,
+		input	issue_data1,
+		input	issue_data1_e_,
+		input	issue_data2,
+		input	issue_data2_e_,
+		input	issue_unit,
+		input	issue_command,
+		output	pre_wb_e_,
+		output	pre_wb_rd,
+		output	wb_e_,
+		output	wb_rd,
+		output	wb_data,
+		output	wb_exp_,
+		output	wb_exp_code,
+		output	wb_pred_miss_,
+		output	wb_jump_miss_,
+		output	exe_busy
 	);
 
 endinterface : IsExeIf
@@ -241,21 +242,21 @@ interface PcInstIf #(
 	//*** Decode to Issue
 
 	//*** Issue to Fetch
-	logic [ROB-1:0]		dec_rob_id
+	logic [ROB-1:0]		dec_rob_id;
 
 	modport fetch (
-		input	dec_rob_id;
+		input	dec_rob_id
 	);
 
-	modport decode (
-	);
+	//modport decode (
+	//);
 
 	modport issue (
-		output	dec_rob_id;
+		output	dec_rob_id
 	);
 
-	modport exe (
-	);
+	//modport exe (
+	//);
 
 endinterface : PcInstIf
 

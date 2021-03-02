@@ -113,14 +113,15 @@ module operand_mux #(
 		);
 
 	//*** select function
-	function PackedData_t sel_data;
-		input RegFile_t		issue_rs;
-		input [DATA-1:0]	bypass_data;
-		input [DATA-1:0]	bypass_e_;
-		input [DATA-1:0]	gpr_data;
-		input [DATA-1:0]	fpr_data;
-		input [DATA-1:0]	pc;
-		input [DATA-1:0]	imm_data;
+	function PackedData_t sel_data (
+		input RegFile_t		issue_rs,
+		input [DATA-1:0]	bypass_data,
+		input [DATA-1:0]	bypass_e_,
+		input [DATA-1:0]	gpr_data,
+		input [DATA-1:0]	fpr_data,
+		input [DATA-1:0]	pc,
+		input [DATA-1:0]	imm_data
+	);
 
 		case ( issue_rs.regtype )
 			TYPE_GPR : begin

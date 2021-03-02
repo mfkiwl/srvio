@@ -274,6 +274,23 @@ switch ( $TOP_MODULE )
 		endif
 	breaksw
 
+	case "alu_top" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/alu_ctrl.sv \
+				${CPURTLDIR}/alu_exe.sv \
+				${CPURTLDIR}/alu_br_comp.sv \
+			)
+		endif
+	breaksw
+
 
 	default : 
 		# Error

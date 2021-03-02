@@ -27,7 +27,7 @@ module rob_status #(
 	input wire [ADDR-1:0]	dec_pc,
 	input RegFile_t			dec_rd,
 	input wire				dec_br_,
-	input wire				dec_br_pred_taken_,
+	input wire				dec_br_pred,
 	input wire				dec_jump_,
 	input wire				dec_invalid,
 	output wire [ROB-1:0]	dec_rob_id,
@@ -48,6 +48,7 @@ module rob_status #(
 	input wire				wb_jump_miss_,
 
 	output wire				commit_e_,
+	output wire				com_jump_,
 	output wire				flush_,
 	output wire [ADDR-1:0]	com_pc,
 	output RegFile_t		com_rd,
@@ -63,7 +64,7 @@ module rob_status #(
 		//logic [ADDR-1:0]	pc;
 		RegFile_t			rd;
 		logic				br_inst_;
-		logic				br_pred_taken_;
+		logic				br_pred;
 		logic				jump_inst_;
 	} RobInfo_t;
 
@@ -91,7 +92,6 @@ module rob_status #(
 	//*** commit
 	wire					com_br_;
 	wire [ADDR-1:0]			com_pc_out;
-	wire					com_jump_;
 	wire					com_br_miss_;
 	wire					com_jump_miss_;
 	RobInfo_t				com_rob_info;
@@ -146,7 +146,7 @@ module rob_status #(
 		//pc : dec_pc,
 		rd : dec_rd,
 		br_inst_ : dec_br_,
-		br_pred_taken_ : dec_br_pred_taken_,
+		br_pred: dec_br_pred,
 		jump_inst_ : dec_jump_
 	};
 	//*** write back

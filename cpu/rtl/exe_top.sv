@@ -26,16 +26,22 @@ module exe_top #(
 	ExeBusy_t		exe_busy;
 	wire			alu_wb_req_;
 	wire			alu_wb_ack_;
+	RegFile_t		alu_pre_wb_rd;
 	wire			div_wb_req_;
 	wire			div_wb_ack_;
+	RegFile_t		div_pre_wb_rd;
 	wire			fpu_wb_req_;
 	wire			fpu_wb_ack_;
+	RegFile_t		fpu_pre_wb_rd;
 	wire			fdiv_wb_req_;
 	wire			fdiv_wb_ack_;
+	RegFile_t		fdiv_pre_wb_rd;
 	wire			csr_wb_req_;
 	wire			csr_wb_ack_;
+	RegFile_t		csr_pre_wb_rd;
 	wire			mem_wb_req_;
 	wire			mem_wb_ack_;
+	RegFile_t		mem_pre_wb_rd;
 
 	//***** combinational cells
 	logic			alu_e_;
@@ -76,14 +82,24 @@ module exe_top #(
 
 
 	//***** CSR Access
+	csr_access_top #(
+	) csr_access_top (
+	);
 
 
 
 	//***** Memory Access
+	mem_access_top #(
+	) mem_access_top (
+	);
 
 
 
 	//***** Common data bus
+	cdb #(
+		.DATA		( DATA )
+	) cdb (
+	);
 
 
 

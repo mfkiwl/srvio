@@ -46,12 +46,25 @@ typedef enum logic[`ExeUnitBus] {
 `define ExeLatCntWidth	2
 `define ExeLatCnt		`ExeLatCntWidth-1:0
 //*** Latency of each Functional Unit
-`define ALU_LATENCY		`ExeLatCntWidth'd0
-`define DIV_LATENCY		`ExeLatCntWidth'd2
-`define FPU_LATENCY		`ExeLatCntWidth'd1
-`define FDIV_LATENCY	`ExeLatCntWidth'd2
-`define CSR_LATENCY		`ExeLatCntWidth'd0
-`define MEM_LATENCY		`ExeLatCntWidth'd2	// latency without cache miss
+`define AluLatency		`ExeLatCntWidth'd0
+`define DivLatency		`ExeLatCntWidth'd2
+`define FpuLatency		`ExeLatCntWidth'd1
+`define FdivLatency		`ExeLatCntWidth'd2
+`define CsrLatency		`ExeLatCntWidth'd0
+`define MemLatency		`ExeLatCntWidth'd2	// latency without cache miss
+
+
+
+//***** Writeback Prioirty of functional units 
+//			Lower value means higher priority
+`define ExePriorWidth	2
+`define ExePrior		`ExePriorWidth-1:0
+`define AluPrior		`ExePriorWidth'd0
+`define DivPrior		`ExePriorWidth'd2
+`define FpuPrior		`ExePriorWidth'd1
+`define FdivPrior		`ExePriorWidth'd2
+`define CsrPrior		`ExePriorWidth'd1
+`define MemPrior		`ExePriorWidth'd1
 
 
 
@@ -81,18 +94,18 @@ typedef enum logic[`ExeOp] {
 //*** Sub-operations
 //* Unsigned
 `define AluUnsigned			0
+`define AluWord				1	// 32bit operation (64bit CPU only)
 //* Add or Sub select
-`define AluSub				1
-`define AluJump				2
+`define AluSub				2
+`define AluJump				3
 //* Multiplication
-`define AluMulHigh			1
-`define AluSrc1Sign			2
+`define AluMulHigh			2
+`define AluSrc1Sign			3
 //* Compare Condition
 `define AluCompLt			1	// 0: Eq, 1: Lt
 `define AluCompNeg			2	// Negate condition 
 `define AluBranch			3
 //* Shift Direction
-`define AluRotate			1
 `define AluRight			2
 `define AluArith			3
 //* Logical Operation
@@ -120,6 +133,7 @@ typedef enum logic[`ExeOp] {
 //*** Sub-operations
 //* Unsigned
 `define DivUnsigned			0
+`define DivWord				1	// 32bit operation (64bit CPU only)
 
 //*** DIV Command
 typedef struct packed {
