@@ -81,7 +81,7 @@ module alu_exe #(
 	assign comp_data1 = ( command.op == ALU_COMP ) ? data1 : 0;
 	assign comp_data2 = ( command.op == ALU_COMP ) ? data2 : 0;
 	assign sft_data1 = ( command.op == ALU_SHIFT ) ? data1 : 0;
-	assign sft_data2 = ( command.op == ALU_SHIFT ) ? data2 : 0;
+	assign sft_data2 = ( command.op == ALU_SHIFT ) ? data2[DATA_SFT-1:0] : 0;
 	assign logic_data1 = ( command.op == ALU_LOGIC ) ? data1 : 0;
 	assign logic_data2 = ( command.op == ALU_LOGIC ) ? data2 : 0;
 	//*** shift
