@@ -28,9 +28,12 @@ module fetch_top #(
 	assign fetch_dec_if.inst_pc = ic_fetch_if.ic_pc;
 	assign fetch_dec_if.inst = ic_fetch_if.ic_inst;
 
-	//fetch_pc_sel #(
-	//) fetch_pc_sel (
-	//);
+
+
+	//***** Fetch pipeline Control
+	fetch_ctrl #(
+	) fetch_ctrl (
+	);
 
 	//***** Instruction address generator
 	fetch_iag #(

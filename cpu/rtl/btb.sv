@@ -27,13 +27,13 @@ module btb #(
 
 	// train
 	input wire						br_commit_,		// branch commit
-	input wire 						br_taken_,		// branch taken
+	input wire 						br_result,		// branch result
 	input wire						br_miss_,		// branch prediction miss
 	input wire 						jump_commit_,	// br/jump commit
 	input wire						jump_call_,		// jump is call
 	input wire						jump_return_,	// jump is return
 	input wire						jump_miss_,		// indirect jump target miss
-	input wire [ADDR-1:0]			com_addr,		// commit pc
+	input wire [ADDR-1:0]			com_pc,			// commit pc
 	input wire [ADDR-1:0]			com_tar_addr	// target address of commited inst
 );
 
@@ -61,6 +61,7 @@ module btb #(
 	wire							tag_match;
 	wire							entry_valid;
 	//*** training
+	wire							br_taken_;
 	wire [BTB_ADDR-1:0]				com_idx;
 	wire [BTB_TAG-1:0]				com_tag;
 	wire [CNT-1:0]					com_cnt;
@@ -90,9 +91,11 @@ module btb #(
 	assign tag_match = ( in_pc_tag == pred_tag );
 	assign pred_cnt = cnt[btb_idx];
 	assign entry_valid = ( pred_cnt != CNT_MIN );
+	//*** branch result
+	assign br_taken_ = ( br_result == `BrTaken ) ? `Enable_ : `Disable_;
 	//*** table update
-	assign com_idx = com_addr[BTB_ADDR+INST_OFS-1:INST_OFS];
-	assign com_tag = com_addr[ADDR-1:BTB_ADDR+INST_OFS];
+	assign com_idx = com_pc[BTB_ADDR+INST_OFS-1:INST_OFS];
+	assign com_tag = com_pc[ADDR-1:BTB_ADDR+INST_OFS];
 	assign com_cnt = cnt[com_idx];
 	assign com_tag_match = ( com_tag == tag[com_idx] );
 	assign com_confident = com_cnt[CNT-1];
@@ -113,8 +116,10 @@ module btb #(
 					com_inst_type = BRTYPE_JUMP;
 				end
 			endcase
-		end else begin
+		end else if ( br_commit_ == `Enable_ ) begin
 			com_inst_type = BRTYPE_BRANCH;
+		end else begin
+			com_inst_type = BRTYPE_NONE;
 		end
 
 		//*** btb update
@@ -183,7 +188,7 @@ module btb #(
 				addr_buf[i] <= {ADDR{1'b0}};
 				tag[i] <= {BTB_TAG{1'b0}};
 				cnt[i] <= {CNT{1'b0}};
-				inst_type[i] <= BRTYPE_BRANCH;
+				inst_type[i] <= BRTYPE_NONE;
 			end
 		end else begin
 			if ( buf_we_ == `Enable_ ) begin

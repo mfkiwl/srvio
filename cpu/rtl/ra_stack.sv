@@ -39,6 +39,10 @@ module ra_stack #(
 	//			スタックのそこのエントリが追い出されるようにしたい
 	// stack.svをベースにして、ptrが一周可能なように書き換え
 
+	// TODO: branchごとにstackの深さを保存しておく
+	//			miss speculativeなreturnにより破壊される可能性はあるが、
+	//			影響は少ないでしょう...
+
 
 
 	//***** stack module

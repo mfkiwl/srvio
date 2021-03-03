@@ -30,6 +30,7 @@ interface ICacheFetchIf #(
 	logic				ic_e_;
 	logic [ADDR-1:0]	ic_pc;
 	logic [INST-1:0]	ic_inst;
+	logic				ic_stall_;
 
 	//*** Fetch Stage to ICache
 	logic				fetch_e_;
@@ -43,7 +44,8 @@ interface ICacheFetchIf #(
 		input	flush_,
 		output	ic_e_,
 		output 	ic_pc,
-		output 	ic_inst
+		output 	ic_inst,
+		output	ic_stall_
 	);
 
 	//*** Fetch Stage side signals
@@ -51,6 +53,7 @@ interface ICacheFetchIf #(
 		input	ic_e_,
 		input 	ic_pc,
 		input 	ic_inst,
+		input	ic_stall_,
 		output	fetch_e_,
 		output	fetch_pc,
 		output	flush_

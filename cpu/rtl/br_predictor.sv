@@ -28,6 +28,7 @@ module br_predictor #(
 	output wire						br_pred,
 
 	// feedback and train
+	input wire [ADDR-1:0]			commit_pc,
 	input wire						br_commit_,
 	input wire 						br_result,
 	input wire 						br_pred_miss_
@@ -48,10 +49,10 @@ module br_predictor #(
 
 					.flush_			( flush_ ),
 
-					.br_			( br_ ),
 					.br_pc			( br_pc ),
 					.br_pred		( br_pred ),
 
+					.commit_pc		( commit_pc ),
 					.br_commit_		( br_commit_ ),
 					.br_result		( br_result ),
 					.br_pred_miss_	( br_pred_miss_ )

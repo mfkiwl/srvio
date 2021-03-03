@@ -22,18 +22,17 @@ module br_pred_cnt #(
 
 	input wire				flush_,
 
-	input wire				br_,
 	input wire [ADDR-1:0]	br_pc,
 	output wire				br_pred,
 
+	input wire [ADDR-1:0]	commit_pc,
 	input wire				br_commit_,
-	input wire				br_result,
+	input wire				br_result,		// taken/not takne
 	input wire				br_pred_miss_
 );
 
 	//***** internal parameters
 	localparam PTR = $clog2(DEPTH);
-	localparam HISTROY = PTR + 1;			// prediction + index
 	localparam CNT_MAX = {CNTW{1'b1}};
 	localparam CNT_MIN = {CNTW{1'b0}};
 	localparam CNT_DEF = ( CNT_MAX / 2 );	// weakly taken
@@ -47,11 +46,9 @@ module br_pred_cnt #(
 	//*** prediction
 	wire [PTR-1:0]			pred_ptr;
 	wire [CNT-1:0]			pred_cnt;
-	wire [HISTORY-1:0]		wr_hist;
 	//*** update
 	wire					tr_pred;
 	wire [PTR-1:0]			tr_ptr;
-	wire [HISTORY-1:0]		rd_hist;
 
 	//***** combinational cells
 	logic [CNT-1:0]			next_cnt [DEPTH-1:0];
@@ -66,32 +63,7 @@ module br_pred_cnt #(
 	//***** assign interanl 
 	assign pred_ptr = br_pc[PTR+ADDR_OFS-1:ADDR_OFS];
 	assign pred_cnt = cnt[pred_ptr];
-	assign wr_hist = {br_pred, pred_ptr};
-	assign {tr_pred, tr_ptr} = rd_hist;
-
-
-
-	//***** History buffer
-	wire				dummy_v;
-	wire				dummy_busy;
-	fifo #(
-		.DATA		( HISTORY ),
-		.DEPTH		( DEPTH ),
-		.BUF_EXT	( `Disable ),
-		.READ		( 1 ),
-		.WRITE		( 1 ),
-		.ACT		( `Low )
-	) pred_history (
-		.clk		( clk ),
-		.reset_		( reset_ ),
-		.flush_		( flush_ ), 
-		.we			( br_ ),
-		.wd			( wr_hist ),
-		.re			( br_commit_ ),
-		.rd			( rd_hist ),
-		.v			( dummy_v ),
-		.busy		( dummy_busy )
-	);
+	assign tr_ptr = commit_pc[PTR+ADDR_OFS-1:ADDR_OFS];
 
 
 

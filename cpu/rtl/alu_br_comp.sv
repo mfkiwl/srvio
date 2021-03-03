@@ -10,6 +10,7 @@
 `include "stddef.vh"
 `include "cpu_config.svh"
 `include "exe.svh"
+`include "branch.svh"
 
 module alu_br_comp #(
 	parameter ADDR = `AddrWidth,
@@ -46,7 +47,7 @@ module alu_br_comp #(
 
 
 	//***** assign internal
-	assign br_res = alu_res[0];
+	assign br_res = ( alu_res[0] == `Enable ) ? `BrTakne : `BrNTaken;
 
 
 	//***** combinational logics
