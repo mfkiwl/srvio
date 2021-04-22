@@ -27,8 +27,6 @@ interface ICacheFetchIf #(
 );
 
 	//*** ICache to Fetch Stage
-	logic				ic_e_;
-	logic [ADDR-1:0]	ic_pc;
 	logic [INST-1:0]	ic_inst;
 	logic				ic_stall_;
 
@@ -42,16 +40,12 @@ interface ICacheFetchIf #(
 		input	fetch_e_,
 		input	fetch_pc,
 		input	flush_,
-		output	ic_e_,
-		output 	ic_pc,
 		output 	ic_inst,
 		output	ic_stall_
 	);
 
 	//*** Fetch Stage side signals
 	modport fetch(
-		input	ic_e_,
-		input 	ic_pc,
 		input 	ic_inst,
 		input	ic_stall_,
 		output	fetch_e_,
@@ -73,6 +67,8 @@ interface FetchDecIf #(
 	logic				inst_e_;
 	logic [ADDR-1:0]	inst_pc;
 	logic [INST-1:0]	inst;
+	logic				dec_stop;	// Stop decode until 
+									//     miss predicted branch is commited
 
 	//*** Decode to Fetch Stage
 	logic				dec_stall;
@@ -82,7 +78,8 @@ interface FetchDecIf #(
 		input	dec_stall,
 		output	inst_e_,
 		output	inst_pc,
-		output	inst
+		output	inst,
+		output	dec_stop
 	);
 
 	//*** Decode Stage side signals
@@ -90,6 +87,7 @@ interface FetchDecIf #(
 		input	inst_e_,
 		input	inst_pc,
 		input	inst,
+		input	dec_stop,
 		output	dec_stall
 	);
 
@@ -242,24 +240,69 @@ interface PcInstIf #(
 
 	//*** Fetch to Issue
 
+	//*** Fetch to Exe
+	logic				exe_br_pred;
+	logic [ADDR-1:0]	exe_target;
+
 	//*** Decode to Issue
 
 	//*** Issue to Fetch
 	logic [ROB-1:0]		dec_rob_id;
 
-	modport fetch (
-		input	dec_rob_id
-	);
+	//*** Exe to Fetch
+	logic [ROB-1:0]		exe_rob_id;
+	logic				wb_e_;
+	logic [ROB-1:0]		wb_rob_id;
+	logic				wb_pred_miss_;
+	logic				wb_jump_miss_;
+	logic				wb_br_result;
+	logic [ADDR-1:0]	wb_tar_addr;
 
-	//modport decode (
-	//);
+	//*** Commit to Fetch
+	logic				commit_e_;
+	logic [ADDR-1:0]	commit_pc;
+	logic [ROB-1:0]		com_rob_id;
+
+	modport fetch (
+		input	dec_rob_id,
+		// branch check
+		input	exe_rob_id,
+		output	exe_br_pred,
+		output	exe_target,
+		// writeback
+		input	wb_e_,
+		input	wb_rob_id,
+		input	wb_pred_miss_,
+		input	wb_jump_miss_,
+		input	wb_br_result,
+		input	wb_tar_addr,
+		// commit
+		input	commit_e_,
+		input	commit_pc,
+		input	com_rob_id
+	);
 
 	modport issue (
-		output	dec_rob_id
+		output	dec_rob_id,
+		// commit
+		output	commit_e_,
+		output	commit_pc,
+		output	com_rob_id
 	);
 
-	//modport exe (
-	//);
+	modport exe (
+		// branch check
+		input	exe_br_pred,
+		input	exe_target,
+		output	exe_rob_id,
+		// writeback
+		output	wb_e_,
+		output	wb_rob_id,
+		output	wb_pred_miss_,
+		output	wb_jump_miss_,
+		output	wb_br_result,
+		output	wb_tar_addr
+	);
 
 endinterface : PcInstIf
 

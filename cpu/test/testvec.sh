@@ -39,7 +39,7 @@ endif
 #set GATE = 1
 set GATE = 0
 if ( $GATE =~ 1 ) then
-	set DEFINE_LIST = ($DEFINE_LIST +define+NETLIST)
+	set DEFINE_LIST = ($DEFINE_LIST NETLIST)
 endif
 
 #############################################
@@ -52,7 +52,7 @@ switch ($Process)
 	case "ASAP7" :
 		set CELL_LIB = "./ASAP7_PDKandLIB_v1p6/lib_release_191006"
 		set CELL_RTL_DIR = "${CELL_LIB}/asap7_7p5t_library/rev25/Verilog"
-		set DEFINE_LIST = (${DEFINE_LIST} +define+ASAP7)
+		set DEFINE_LIST = (${DEFINE_LIST} ASAP7)
 
 		set RTL_FILE = ( \
 			-v $CELL_RTL_DIR/asap7sc7p5t_AO_RVT_TT_08302018.v \
@@ -287,6 +287,65 @@ switch ( $TOP_MODULE )
 				${CPURTLDIR}/alu_ctrl.sv \
 				${CPURTLDIR}/alu_exe.sv \
 				${CPURTLDIR}/alu_br_comp.sv \
+			)
+		endif
+	breaksw
+
+	case "br_status" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/br_status_buf.sv \
+				${CPURTLDIR}/br_rob_id_buf.sv \
+				${PMRTLDIR}/cnt_bits.sv \
+				${PMRTLDIR}/pri_enc.sv \
+				${PMRTLDIR}/regfile.sv \
+			)
+		endif
+	breaksw
+
+	case "br_status_buf" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${PMRTLDIR}/cnt_bits.sv \
+			)
+		endif
+	breaksw
+
+	case "fetch_iag" :
+		set TEST_FILE = "${TOP_MODULE}_test.sv"
+		if ( $GATE =~ 1 ) then
+			set RTL_FILE = ( \
+				$RTL_FILE \
+				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
+			)
+		else
+			set RTL_FILE = ( \
+				${CPURTLDIR}/${TOP_MODULE}.sv \
+				${CPURTLDIR}/br_status.sv \
+				${CPURTLDIR}/br_status_buf.sv \
+				${CPURTLDIR}/br_rob_id_buf.sv \
+				${CPURTLDIR}/btb.sv \
+				${CPURTLDIR}/br_predictor.sv \
+				${CPURTLDIR}/br_pred_cnt.sv \
+				${CPURTLDIR}/ra_stack.sv \
+				${PMRTLDIR}/cnt_bits.sv \
+				${PMRTLDIR}/pri_enc.sv \
+				${PMRTLDIR}/regfile.sv \
+				${PMRTLDIR}/stack.sv \
 			)
 		endif
 	breaksw

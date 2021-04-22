@@ -56,7 +56,7 @@
 `define RvFt4Reg		`RvRegW'b00100		// (f4/ft4)	 : Temporary4
 `define RvFt5Reg		`RvRegW'b00101		// (f5/ft5)	 : Temporary5
 `define RvFt6Reg		`RvRegW'b00110		// (f6/ft6)	 : Temporary6
-`define RvFt6Reg		`RvRegW'b00111		// (f7/ft7)	 : Temporary7
+`define RvFt7Reg		`RvRegW'b00111		// (f7/ft7)	 : Temporary7
 `define RvFs0Reg		`RvRegW'b01000		// (f8/fs0)	 : Saved0
 `define RvFs1Reg		`RvRegW'b01001		// (f9/fs1)	 : Saved1
 `define RvFa0Reg		`RvRegW'b01010		// (f10/fa0) : Arg0 / Return value
@@ -77,10 +77,10 @@
 `define RvFs9Reg		`RvRegW'b11001		// (f25/fs9) : Saved9
 `define RvFs10Reg		`RvRegW'b11010		// (f26/fs10): Saved10
 `define RvFs11Reg		`RvRegW'b11011		// (f27/fs11): Saved11
-`define RvFt3Reg		`RvRegW'b11100		// (f28/ft3) : Temporary3
-`define RvFt4Reg		`RvRegW'b11101		// (f29/ft4) : Temporary4
-`define RvFt5Reg		`RvRegW'b11110		// (f30/ft5) : Temporary5
-`define RvFt6Reg		`RvRegW'b11111		// (f31/ft6) : Temporary6
+`define RvFt8Reg		`RvRegW'b11100		// (f28/ft8) : Temporary8
+`define RvFt9Reg		`RvRegW'b11101		// (f29/ft9) : Temporary9
+`define RvFt10Reg		`RvRegW'b11110		// (f30/ft10) : Temporary10
+`define RvFt11Reg		`RvRegW'b11111		// (f31/ft11) : Temporary11
 
 
 `endif // _RV_REGS_SVH_INCLUDED_

@@ -14,15 +14,17 @@
 `define BrInstTypeWidth		3
 `define BrInstType			`BrInstTypeWidth-1:0
 typedef enum logic [`BrInstType] {
-	BRTYPE_NONE		= `BrInstTypeWIdth'b000,	// Not a branch
+	BRTYPE_NONE		= `BrInstTypeWidth'b000,	// Not a branch
 	BRTYPE_BRANCH	= `BrInstTypeWidth'b001,	// Branch
 	BRTYPE_JUMP		= `BrInstTypeWidth'b010,	// normal jump, jr
 	BRTYPE_CALL		= `BrInstTypeWidth'b011,	// function call
-	BRTYPE_RET		= `BrInstTypeWidth'b100		// function return
+	BRTYPE_RET		= `BrInstTypeWidth'b100,	// function return
+	BRTYPE_CALLRET	= `BrInstTypeWidth'b101		// function call/return
 } BrInstType_t;
 
 //***** branch instruction direction
-`define BrTaken			0	// taken
-`define BrNTaken		1	// not taken
+`define BrTaken			0			// taken
+`define BrNTaken		1			// not taken
+`define DefaultPred		`BrTaken	// Prediction for Untracked Branch 
 
 `endif // _BRANCH_SVH_INCLUDED_
