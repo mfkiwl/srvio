@@ -1,2 +1,2 @@
 # srvio
-Synthesizeble Risc-V In-order Processor
+Simple Risc-V Implementable Out-of-Order Processor
