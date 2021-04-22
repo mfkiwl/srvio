@@ -14,8 +14,11 @@
 // fetch instruction address generator
 module fetch_iag #(
 	parameter ADDR = `AddrWidth,
+	parameter INST = `InstWidth,
+	parameter PRED_MAX = `PredMaxDepth,
+	parameter BP_DEPTH = `PredTableDepth,
+	parameter BrPredType_t PREDICTOR = `PredType,
 	parameter BTB_DEPTH = `BtbDepth,
-	parameter BTB_CNT = `BtbCntWidth,
 	parameter RA_DEPTH = `RaStackDepth,
 	parameter ROB_DEPTH = `RobDepth,
 	// constant
@@ -42,19 +45,24 @@ module fetch_iag #(
 
 	// exe
 	input wire [ROB-1:0]	exe_rob_id,
-	output wire [ADDR-1:0]	exe_pred_addr,
 	output wire				exe_br_pred,
+	output wire [ADDR-1:0]	exe_target,
 
 	// writeback
+	input wire				wb_e_,
 	input wire [ROB-1:0]	wb_rob_id,
-	input wire [ADDR-1:0]	wb_tar_pc,
 	input wire				wb_pred_miss_,
 	input wire				wb_jump_miss_,
+	input wire				wb_br_result,
+	input wire [ADDR-1:0]	wb_tar_addr,
+	output wire				wb_flush_,
 
 	// commit
-	input wire				commit_,
+	input wire				commit_e_,
 	input wire [ADDR-1:0]	commit_pc,
-	input wire [ROB-1:0]	com_rob_id
+	input wire [ROB-1:0]	com_rob_id,
+
+	output wire				busy
 );
 
 	//***** internal wires
@@ -70,6 +78,7 @@ module fetch_iag #(
 	wire				inst_call_;
 	wire				inst_return_;
 	//*** decode
+	wire				dec_br_;
 	//*** exe
 	//*** writeback
 	//*** commit
@@ -84,6 +93,11 @@ module fetch_iag #(
 
 
 
+	//***** assign internal
+	assign dec_br_ = dec_e_ || ( dec_jr_ || dec_jump_ );
+
+
+
 	//***** Branch/Jump Instruction Status
 	br_status #(
 		.ADDR			( ADDR )
@@ -93,6 +107,8 @@ module fetch_iag #(
 
 		.fetch_stall_	( fetch_stall_ ),
 		.fetch_pc		( fetch_pc ),
+		.btb_hit		( btb_hit ),
+		.btb_addr		( btb_addr ),
 		.btb_type		( btb_type ),
 		.br_pred		( br_pred ),
 		.ret_v			( ret_v ),
@@ -104,15 +120,42 @@ module fetch_iag #(
 		.inst			( inst ),
 		.inst_br_		( inst_br_ ),
 		.inst_call_		( inst_call_ ),
-		.inst_return_	( inst_return_ )
+		.inst_return_	( inst_return_ ),
+
+		.dec_br_		( dec_br_ ),
+		.dec_rob_id		( dec_rob_id ),
+
+		.exe_rob_id		( exe_rob_id ),
+		.exe_target		( exe_target ),
+		.exe_br_pred	( exe_br_pred ),
+
+		.wb_e_			( wb_e_ ),
+		.wb_rob_id		( wb_rob_id ),
+		.wb_pred_miss_	( wb_pred_miss_ ),
+		.wb_jump_miss_	( wb_jump_miss_ ),
+		.wb_br_result	( wb_br_result ),
+		.wb_tar_addr	( wb_tar_addr ),
+		.wb_flush_		( wb_flush_ ),
+
+		.commit_e_		( commit_e_ ),
+		.com_rob_id		( com_rob_id ),
+		.br_commit_		( br_commit_ ),
+		.br_result		( br_result ),
+		.br_pred_miss_	( br_pred_miss_ ),
+		.jump_commit_	( jump_commit_ ),
+		.jump_call_		( jump_call_ ),
+		.jump_return_	( jump_return_ ),
+		.jump_miss_		( jump_miss_ ),
+		.com_tar_addr	( com_tar_addr ),
+
+		.pred_busy		( busy )
 	);
 
 
 	//***** Branch Target Buffer
 	btb #(
 		.ADDR			( ADDR ),
-		.BTB_D			( BTB_DEPTH ),
-		.CNT			( BTB_CNT )
+		.BTB_D			( BTB_DEPTH )
 	) btb (
 		.clk			( clk ),
 		.reset_			( reset_ ),
@@ -138,12 +181,14 @@ module fetch_iag #(
 	//***** Branch Prediction
 	br_predictor #(
 		.ADDR			( ADDR ),
-		.PRED_D			
+		.DEPTH			( BP_DEPTH ),
+		.PRED_MAX		( PRED_MAX ),
+		.PREDICTOR		( PREDICTOR )
 	) br_predictor (
 		.clk			( clk ),
 		.reset_			( reset_ ),
 
-		.flush_			( flush_ ),
+		.flush_			( wb_flush_ ),
 
 		.br_			( inst_br_ ),
 		.br_pc			( fetch_pc ),
@@ -167,7 +212,7 @@ module fetch_iag #(
 
 		.call_			( inst_call_ ),
 		.call_pc		( inst_pc ),
-		.ret_			( inst_ret_ ),
+		.ret_			( inst_return_ ),
 		.ret_v			( ret_v ),
 		.ret_addr		( ret_pc )
 	);

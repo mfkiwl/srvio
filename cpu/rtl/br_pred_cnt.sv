@@ -33,8 +33,8 @@ module br_pred_cnt #(
 
 	//***** internal parameters
 	localparam PTR = $clog2(DEPTH);
-	localparam CNT_MAX = {CNTW{1'b1}};
-	localparam CNT_MIN = {CNTW{1'b0}};
+	localparam CNT_MAX = {CNT{1'b1}};
+	localparam CNT_MIN = {CNT{1'b0}};
 	localparam CNT_DEF = ( CNT_MAX / 2 );	// weakly taken
 	localparam BYTE = `ByteBitWidth;
 	localparam ADDR_OFS = $clog2(`InstWidth/BYTE);
@@ -74,11 +74,11 @@ module br_pred_cnt #(
 			if ( !br_commit_ && ( ci == tr_ptr ) ) begin
 				if ( br_result == `BrTaken ) begin
 					// branch taken
-					next_cnt =
+					next_cnt[ci] =
 						( cnt[ci] == CNT_MIN ) ? CNT_MIN : cnt[ci] - 1'b1;
 				end else begin
 					// branch not taken
-					next_cnt =
+					next_cnt[ci] =
 						( cnt[ci] == CNT_MAX ) ? CNT_MAX : cnt[ci] + 1'b1;
 				end
 			end else begin
