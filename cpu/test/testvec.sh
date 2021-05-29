@@ -1,50 +1,48 @@
 #!/bin/tcsh
 
-#######################################
 ##### File and Directory Settings #####
-#######################################
-set TOPDIR = "../.."
-set COMMONDIR = "${TOPDIR}/common"
-set CPUDIR = "${TOPDIR}/cpu"
-set CPURTLDIR = "${TOPDIR}/cpu/rtl"
-set CPUTESTDIR = "${CPUDIR}/test"
-set CPUGATEDIR = "${CPUDIR}/syn/result"
-set PMDIR = "${TOPDIR}/pm"
-set PMRTLDIR = "${PMDIR}/rtl"
-set INCDIR = ( \
-	${COMMONDIR}/ \
-	${CPUDIR}/include \
-)
-set INCLUDE = ()
-set DEFINES = ()
+source directory_setup.sh
 
-#############################################
-# Output Wave
-#############################################
+
+
+##### load configs
+source sim_tool.sh
+source target.sh
+
+
+
+##### Output Wave
 set Waves = 1
 set WaveOpt
 
-#############################################
-# Defines
-#############################################
-if ( $Waves =~ 1 ) then
-	set DEFINE_LIST = ( WAVE_DUMP )
-else
-	set DEFINE_LIST = ()
+
+
+##### Simulation after Systemverilog to verilog (SV2V) Conversion
+set SV2V = 0
+if ( $SIM_TOOL =~ "iverilog" ) then
+	# iverilog only supports verilog formats
+	set SV2V = 1
 endif
 
-#############################################
-#           Gate Level Simulation           #
-#############################################
-#set GATE = 1
+
+
+##### Defines
+if ( $Waves =~ 1 ) then
+	set DEFINE_LIST = ( $DEFINE_LIST WAVE_DUMP )
+endif
+
+
+
+##### Gate Level Simulation
 set GATE = 0
+#set GATE = 1
 if ( $GATE =~ 1 ) then
 	set DEFINE_LIST = ($DEFINE_LIST NETLIST)
 endif
 
-#############################################
-#              Process Setting              #
-#############################################
+
+
+##### Process Setting
 #set Process = "ASAP7"
 set Process = "None"
 
@@ -54,316 +52,50 @@ switch ($Process)
 		set CELL_RTL_DIR = "${CELL_LIB}/asap7_7p5t_library/rev25/Verilog"
 		set DEFINE_LIST = (${DEFINE_LIST} ASAP7)
 
-		set RTL_FILE = ( \
-			-v $CELL_RTL_DIR/asap7sc7p5t_AO_RVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_AO_LVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_AO_SLVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_AO_SRAM_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_INVBUF_RVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_INVBUF_LVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_INVBUF_SLVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_INVBUF_SRAM_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_OA_RVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_OA_LVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_OA_SLVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_OA_SRAM_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SEQ_RVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SEQ_LVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SEQ_SLVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SEQ_SRAM_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SIMPLE_RVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SIMPLE_LVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SIMPLE_SLVT_TT_08302018.v \
-			-v $CELL_RTL_DIR/asap7sc7p5t_SIMPLE_SRAM_TT_08302018.v \
+		set CORNERS = ( \
+			TT_08302018 \
 		)
+		#	FF_08302018 \
+		#	SS_08302018 \
+
+		set CELL_NAME = ( \
+			${CELL_RTL_DIR}/asap7sc7p5t_SIMPLE_RVT \
+			${CELL_RTL_DIR}/asap7sc7p5t_SEQ_RVT \
+			${CELL_RTL_DIR}/asap7sc7p5t_OA_RVT \
+			${CELL_RTL_DIR}/asap7sc7p5t_INVBUF_RVT \
+			${CELL_RTL_DIR}/asap7sc7p5t_AO_RVT \
+		)
+
+		set LIB_FILE = ()
+		foreach cell ( $CELL_NAME )
+			foreach corner ( $CORNERS )
+				set LIB_FILE = ( \
+					${LIB_FILE} \
+					${cell}_${corner}.v \
+				)
+			end
+		end
 	breaksw
+
 	default :
 		# Simulation with simple gate model (Process = "None")
 		# Nothing to set
-		set RTL_FILE = ()
+		set LIB_FILE = ()
 	breaksw
 endsw
 
-########################################
-#     Simulation Target Selection      #
-########################################
-source target.sh
-
+###### Simulation Target Selection
 if ( $# =~ 0 ) then
 	set TOP_MODULE = $DEFAULT_DESIGN
 else
 	set TOP_MODULE = $1
 endif
 
-switch ( $TOP_MODULE )
-	case "cpu_pipeline" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/fetch_top.sv \
-				${CPURTLDIR}/decode_top.sv \
-				${CPURTLDIR}/decoder.sv \
-			)
-		endif
-	breaksw
-
-	case "btb" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-			)
-		endif
-	breaksw
-
-	case "decode_top" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/decoder.sv \
-			)
-		endif
-	breaksw
-
-	case "fetch_top"
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-			)
-		endif
-	breaksw
-
-	case "decoder" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-			)
-		endif
-	breaksw
-
-	case "rename" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/rename_map.sv \
-			)
-		endif
-	breaksw
-
-	case "rob_status" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${PMRTLDIR}/ring_buf.sv \
-				${PMRTLDIR}/regfile.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-			)
-		endif
-	breaksw
-
-	case "exp_manage" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-			)
-		endif
-	breaksw
-
-	case "reorder_buffer" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/rename.sv \
-				${CPURTLDIR}/rename_map.sv \
-				${CPURTLDIR}/rob_status.sv \
-				${CPURTLDIR}/exp_manage.sv \
-				${CPURTLDIR}/pc_buf.sv \
-				${PMRTLDIR}/regfile.sv \
-				${PMRTLDIR}/ring_buf.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-			)
-		endif
-	breaksw
-
-	case "inst_sched" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/issue_select.sv \
-				${PMRTLDIR}/selector.sv \
-			)
-		endif
-	breaksw
-
-	case "inst_queue" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/inst_sched.sv \
-				${CPURTLDIR}/issue_select.sv \
-				${PMRTLDIR}/freelist.sv \
-				${PMRTLDIR}/selector.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-				${PMRTLDIR}/regfile.sv \
-			)
-		endif
-	breaksw
-
-	case "alu_top" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/alu_ctrl.sv \
-				${CPURTLDIR}/alu_exe.sv \
-				${CPURTLDIR}/alu_br_comp.sv \
-			)
-		endif
-	breaksw
-
-	case "br_status" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/br_status_buf.sv \
-				${CPURTLDIR}/br_rob_id_buf.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-				${PMRTLDIR}/pri_enc.sv \
-				${PMRTLDIR}/regfile.sv \
-			)
-		endif
-	breaksw
-
-	case "br_status_buf" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-			)
-		endif
-	breaksw
-
-	case "fetch_iag" :
-		set TEST_FILE = "${TOP_MODULE}_test.sv"
-		if ( $GATE =~ 1 ) then
-			set RTL_FILE = ( \
-				$RTL_FILE \
-				${GATEDIR}/${TOP_MODULE}/${TOP_MODULE}.mapped.v \
-			)
-		else
-			set RTL_FILE = ( \
-				${CPURTLDIR}/${TOP_MODULE}.sv \
-				${CPURTLDIR}/br_status.sv \
-				${CPURTLDIR}/br_status_buf.sv \
-				${CPURTLDIR}/br_rob_id_buf.sv \
-				${CPURTLDIR}/btb.sv \
-				${CPURTLDIR}/br_predictor.sv \
-				${CPURTLDIR}/br_pred_cnt.sv \
-				${CPURTLDIR}/ra_stack.sv \
-				${PMRTLDIR}/cnt_bits.sv \
-				${PMRTLDIR}/pri_enc.sv \
-				${PMRTLDIR}/regfile.sv \
-				${PMRTLDIR}/stack.sv \
-			)
-		endif
-	breaksw
+source module.sh
 
 
-	default : 
-		# Error
-		echo "Invalid Module"
-		exit 1
-	breaksw
-endsw
 
-
-########################################
-#        Simulation Tool Setup         #
-########################################
-source sim_tool.sh
-
+##### Simulation Tool Setup
 switch( $SIM_TOOL )
 	case "ncverilog" :
 		if ( $Waves =~ 1 ) then
@@ -499,13 +231,44 @@ switch( $SIM_TOOL )
 		end
 	breaksw
 
-	case "xilinx_sim" :
+	case "iverilog" :
 		if ( $Waves =~ 1 ) then
-			set WaveOpt = (-d VCD)
+			set WaveOpt = (-D VCD)
 		endif
 
 		set SIM_OPT = ( \
 			$WaveOpt \
+			-o ${TOP_MODULE}.sim \
+		)
+
+		set SRC_EXT = ()
+
+		foreach def ( $DEFINE_LIST )
+			set DEFINES = ( \
+				-D $def \
+				$DEFINES \
+			)
+		end
+
+		foreach dir ( $INCDIR )
+			set INCLUDE = ( \
+				-I $dir \
+				$INCLUDE \
+			)
+		end
+	breaksw
+
+	case "xilinx_sim" :
+		#if ( $Waves =~ 1 ) then
+		#	set WaveOpt = (-d VCD)
+		#endif
+		# Output WDB instead
+
+		set SIM_OPT = ( \
+			$WaveOpt \
+		)
+
+		set SRC_EXT = ( \
 		)
 
 		foreach def ( $DEFINE_LIST )
@@ -530,20 +293,89 @@ switch( $SIM_TOOL )
 endsw
 
 
-##############################
-#       run simulation       #
-##############################
-if ( ${SIM_TOOL} =~ "xilinx_sim" ) then
-	xvlog \
-		--sv \
-		${SIM_OPT} \
-		${INCLUDE} \
-		${DEFINES} \
-		${TEST_FILE} \
-		${RTL_FILE}
 
-	xelab ${TOP_MODULE}_test
-	xsim --R ${TOP_MODULE}_test
+##### run simulation
+if ( ${SIM_TOOL} =~ "xilinx_sim" ) then
+	mkdir -p xilinx/${TOP_MODULE}
+	set FILE_TCL = "./xilinx/${TOP_MODULE}/files.tcl"
+	set DEFINE_TCL = "./xilinx/${TOP_MODULE}/defines.tcl"
+
+	### set design target
+	echo "set TOP ${TOP_MODULE}" > "./xilinx/top.tcl"
+
+	### generate tcl file to designate source flies
+	# Waveform configuration
+	echo "set WAVEFORM $Waves" > ${FILE_TCL}
+
+	# Add Design RTL Files
+	echo "set DESIGN_FILES [list \\" >> ${FILE_TCL}
+	foreach files ( $RTL_FILE )
+		echo "$files \\" >> ${FILE_TCL}
+	end
+	echo "]" >> ${FILE_TCL}
+
+	# Add Test Files
+	echo "set TEST_FILES [list \\" >> ${FILE_TCL}
+	foreach files ( $TEST_FILE )
+		echo "$files \\" >> ${FILE_TCL}
+	end
+	echo "]" >> ${FILE_TCL}
+
+	# Add include directories
+	echo "set INCLUDE_DIRS [list \\" >> ${FILE_TCL}
+	foreach dirs ( $INCDIR )
+		echo "$dirs \\" >> ${FILE_TCL}
+	end
+	echo "]" >> ${FILE_TCL}
+
+	# Add define lists
+	echo "set DEFINE_LISTS [list \\" >> ${DEFINE_TCL}
+	foreach dirs ( $DEFINE_LIST )
+		echo "$dirs \\" >> ${DEFINE_TCL}
+	end
+	echo "]" >> ${DEFINE_TCL}
+
+	# create vivado projects for debug
+	vivado -mode batch -source ./xilinx/prj.tcl
+
+
+
+	#### Compile and simulation
+	#xvlog \
+	#	--sv \
+	#	${SIM_OPT} \
+	#	${INCLUDE} \
+	#	${DEFINES} \
+	#	${TEST_FILE} \
+	#	${LIB_FILE} \
+	#	${RTL_FILE}
+
+	#if ( $? =~ 1 ) then
+	#	echo "Failed at compilation!"
+	#	exit
+	#endif
+
+
+
+	#if ( $Waves ) then
+	#	set xelab_option = "--debug all"
+	#	set xsim_option = "--tclbatch ./xilinx/xwaves.tcl --wdb waves.wdb"
+	#else
+	#	set xelab_option = ""
+	#	set xsim_option = "--R"
+	#endif
+
+	#xelab ${xelab_option} ${TOP_MODULE}_test
+	#if ( $? =~ 1 ) then
+	#	echo "Failed at elaboration!"
+	#	exit
+	#endif
+
+	#xsim ${xsim_option} ${TOP_MODULE}_test
+	#if ( $? =~ 1 ) then
+	#	echo "Simulation failed!"
+	#	exit
+	#endif
 else
 	${SIM_TOOL} \
 		${SIM_OPT} \
@@ -551,5 +383,6 @@ else
 		${INCLUDE} \
 		${DEFINES} \
 		${TEST_FILE} \
+		${LIB_FILE} \
 		${RTL_FILE}
 endif

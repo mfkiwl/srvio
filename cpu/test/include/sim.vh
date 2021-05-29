@@ -1,3 +1,12 @@
+/*
+* <sim.vh>
+* 
+* Copyright (c) 2021 Yosuke Ide <yosuke.ide@keio.jp>
+* 
+* This software is released under the MIT License.
+* http://opensource.org/licenses/mit-license.php
+*/
+
 `ifndef _SIM_H_INCLUDED_
 `define _SIM_H_INCLUDED_
 
@@ -32,35 +41,35 @@
 `define ResetCharSetting		$write("%c[0m",27);
 
 /* reset setting */
-`define ATT_RESET				0
+`define ATT_RESET			0
 
 /* character option */
-`define ATT_BOLD				1
-`define ATT_BAR					4
+`define ATT_BOLD			1
+`define ATT_BAR				4
 
 /* character color */
-`define ATT_C_BLACK				30
-`define ATT_C_RED				31
-`define ATT_C_GREEN				32
-`define ATT_C_YELLOW			33
-`define ATT_C_BLUE				34
-`define ATT_C_MAGENTA			35
-`define ATT_C_CYAN				36
-`define ATT_C_WHITE				37
+`define ATT_C_BLACK			30
+`define ATT_C_RED			31
+`define ATT_C_GREEN			32
+`define ATT_C_YELLOW		33
+`define ATT_C_BLUE			34
+`define ATT_C_MAGENTA		35
+`define ATT_C_CYAN			36
+`define ATT_C_WHITE			37
 
 /* background color */
-`define ATT_B_BLACK				40
-`define ATT_B_RED				41
-`define ATT_B_GREEN				42
-`define ATT_B_YELLOW			43
-`define ATT_B_BLUE				44
-`define ATT_B_MAGENTA			45
-`define ATT_B_CYAN				46
-`define ATT_B_GRAY				47
+`define ATT_B_BLACK			40
+`define ATT_B_RED			41
+`define ATT_B_GREEN			42
+`define ATT_B_YELLOW		43
+`define ATT_B_BLUE			44
+`define ATT_B_MAGENTA		45
+`define ATT_B_CYAN			46
+`define ATT_B_GRAY			47
 
 /* Clock generation */
-`define DefClk					always #(STEP/2) begin \
-									clk <= ~clk; \
-								end
+`define DefClk				always #(STEP/2) begin \
+								clk <= ~clk; \
+							end
 
 `endif //_SIM_H_INCLUDED_

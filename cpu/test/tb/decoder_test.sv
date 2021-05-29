@@ -26,13 +26,13 @@ module decoder_test;
 	reg					inst_e_;
 	reg					is_full;
 	wire				dec_e_out_;
-	wire RegFile_t		rs1_out;
-	wire RegFile_t		rs2_out;
-	wire RegFile_t		rd_out;
+	RegFile_t			rs1_out;
+	RegFile_t			rs2_out;
+	RegFile_t			rd_out;
 	wire				invalid_out;
-	wire ImmData_t		imm_data_out;
-	wire ExeUnit_t		unit_out;
-	wire OpCommand_t	command_out;
+	ImmData_t			imm_data_out;
+	ExeUnit_t			unit_out;
+	OpCommand_t			command_out;
 
 	union packed {
 		RvRtype_t		r;
