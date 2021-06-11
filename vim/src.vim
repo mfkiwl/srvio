@@ -1,10 +1,6 @@
 let g:srcdir = ''
-let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./bkp/rtl'
-let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./bkp/test/tb'
-let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./bkp/test/template'
 let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./cpu/rtl'
 let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./cpu/test/tb'
-let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./cpu/test/template'
 let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./pm/rtl'
 let g:srcdir = g:srcdir . ' -y /home/gizaneko/proj/srvio/./pm/test'
 

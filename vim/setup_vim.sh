@@ -147,7 +147,7 @@ end
 
 ##### create setup file for independent source files
 if ( $setup_design =~ 1 ) then
-	foreach src_file ( $src_files )
+	foreach src_file ( $src_files $inc_files )
 		set file_name = `basename -s .sv $src_file`
 		set file_name = `basename -s .v $file_name`
 		foreach ext ($verilog_src_ext)

@@ -1,6 +1,4 @@
 let g:incdir = ''
-let g:incdir = g:incdir . ' +incdir+/home/gizaneko/proj/srvio/./bkp/include'
-let g:incdir = g:incdir . ' +incdir+/home/gizaneko/proj/srvio/./bkp/test/include'
 let g:incdir = g:incdir . ' +incdir+/home/gizaneko/proj/srvio/./common'
 let g:incdir = g:incdir . ' +incdir+/home/gizaneko/proj/srvio/./cpu/include'
 let g:incdir = g:incdir . ' +incdir+/home/gizaneko/proj/srvio/./cpu/test/include'
