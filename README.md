@@ -1,3 +1,3 @@
 # srvio
-Simple Risc-V Implementable Out-of-Order Processor
-現在、実装中
+Simple Risc-V Implementable Out-of-Order Processor  
+現在、世界一整った開発環境を目指して実装中...
