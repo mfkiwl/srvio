@@ -27,6 +27,8 @@ set skip_word = (\
 	gomi \
 	template \
 	sv2v \
+	xilinx \
+	syn \
 )
 
 ### verilog source file extension (default v, sv)
@@ -42,7 +44,7 @@ set verilog_header_ext = ( \
 
 
 ##### run directory checking
-set top = `git rev-parse --show-toplevel >& /dev/null`
+set top = `git rev-parse --show-toplevel`
 if ( $top =~ "" ) then
 	# Not in git repository
 	#	executed in ${top directory}/vim (= Where this script locates)
@@ -150,8 +152,10 @@ if ( $setup_design =~ 1 ) then
 	foreach src_file ( $src_files $inc_files )
 		set file_name = `basename -s .sv $src_file`
 		set file_name = `basename -s .v $file_name`
-		foreach ext ($verilog_src_ext)
-			set file_name = `basename -s $.ext $file_name`
+		set file_name = `basename -s .svh $src_file`
+		set file_name = `basename -s .vh $file_name`
+		foreach ext ($verilog_src_ext $verilog_header_ext)
+			set file_name = `basename -s .$ext $file_name`
 		end
 		set filepath = `dirname $src_file`
 		set setpath = ${top}/${filepath}/${vim_setup_dir}
