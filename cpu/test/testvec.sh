@@ -1,7 +1,11 @@
 #!/bin/tcsh
 
-##### File and Directory Settings #####
-source directory_setup.sh
+##### File, Directory and Define Settings #####
+source config.sh
+set INCLUDE = ()
+set DEFINES = ()
+set RTL_FILE = ()
+set LIBS = ()
 
 
 
@@ -44,7 +48,8 @@ endif
 
 ##### Process Setting
 #set Process = "ASAP7"
-set Process = "None"
+set Process = "Xilinx"
+#set Process = "None"
 
 switch ($Process)
 	case "ASAP7" :
@@ -66,6 +71,7 @@ switch ($Process)
 			${CELL_RTL_DIR}/asap7sc7p5t_AO_RVT \
 		)
 
+		# library files
 		set LIB_FILE = ()
 		foreach cell ( $CELL_NAME )
 			foreach corner ( $CORNERS )
@@ -75,12 +81,35 @@ switch ($Process)
 				)
 			end
 		end
+
+		# directory containing library files
+		set LIB_DIR = ()
+	breaksw
+
+	case "Xilinx" : 
+		set VIVADO_TOP = `which vivado | sed "s/\/bin.*//"`
+		set CELL_LIB = ${VIVADO_TOP}/data
+		set XPM_DIR = ${CELL_LIB}/ip/xpm
+		set CELL_RTL_DIR = ${CELL_LIB}/verilog/src
+
+
+		# library files
+		set LIB_FILE = ( \
+			${XPM_DIR}/xpm_memory/hdl/xpm_memory.sv \
+		)
+
+		# directory containing library files
+		set LIB_DIR = ( \
+			${CELL_RTL_DIR}/unisims \
+			${CELL_RTL_DIR}/retargets \
+		)
 	breaksw
 
 	default :
 		# Simulation with simple gate model (Process = "None")
 		# Nothing to set
 		set LIB_FILE = ()
+		set LIB_DIR = ()
 	breaksw
 endsw
 
@@ -161,6 +190,20 @@ switch( $SIM_TOOL )
 				$INCLUDE \
 			)
 		end
+
+		foreach lib ( $LIB_FILE )
+			set LIBS = ( \
+				-v $lib \
+				$LIBS \
+			)
+		end
+
+		foreach lib ( $LIB_DIR )
+			set LIBS = ( \
+				-y $lib \
+				$LIBS \
+			)
+		end
 	breaksw
 
 	case "vcs" :
@@ -196,6 +239,20 @@ switch( $SIM_TOOL )
 				$INCLUDE \
 			)
 		end
+
+		foreach lib ( $LIB_FILE )
+			set LIBS = ( \
+				-v $lib \
+				$LIBS \
+			)
+		end
+
+		foreach lib ( $LIB_DIR )
+			set LIBS = ( \
+				-y $lib \
+				$LIBS \
+			)
+		end
 	breaksw
 
 	case "verilator" :
@@ -229,6 +286,20 @@ switch( $SIM_TOOL )
 				$INCLUDE \
 			)
 		end
+
+		foreach lib ( $LIB_FILE )
+			set LIBS = ( \
+				-v $lib \
+				$LIBS \
+			)
+		end
+
+		foreach lib ( $LIB_DIR )
+			set LIBS = ( \
+				-y $lib \
+				$LIBS \
+			)
+		end
 	breaksw
 
 	case "iverilog" :
@@ -254,6 +325,20 @@ switch( $SIM_TOOL )
 			set INCLUDE = ( \
 				-I $dir \
 				$INCLUDE \
+			)
+		end
+
+		foreach lib ( $LIB_FILE )
+			set LIBS = ( \
+				-l $lib \
+				$LIBS \
+			)
+		end
+
+		foreach lib ( $LIB_DIR )
+			set LIBS = ( \
+				-y $lib \
+				$LIBS \
 			)
 		end
 	breaksw
@@ -282,6 +367,20 @@ switch( $SIM_TOOL )
 			set INCLUDE = ( \
 				--include $dir \
 				$INCLUDE \
+			)
+		end
+
+		foreach lib ( $LIB_FILE )
+			set LIBS = ( \
+				--sourcelibfile $lib \
+				$LIBS \
+			)
+		end
+
+		foreach lib ( $LIB_DIR )
+			set LIBS = ( \
+				--sourcelibfile $lib \
+				$LIBS \
 			)
 		end
 	breaksw
@@ -329,7 +428,7 @@ if ( ${SIM_TOOL} =~ "xilinx_sim" ) then
 	echo "]" >> ${FILE_TCL}
 
 	# Add define lists
-	echo "set DEFINE_LISTS [list \\" >> ${DEFINE_TCL}
+	echo "set DEFINE_LISTS [list \\" > ${DEFINE_TCL}
 	foreach dirs ( $DEFINE_LIST )
 		echo "$dirs \\" >> ${DEFINE_TCL}
 	end
@@ -337,45 +436,6 @@ if ( ${SIM_TOOL} =~ "xilinx_sim" ) then
 
 	# create vivado projects for debug
 	vivado -mode batch -source ./xilinx/prj.tcl
-
-
-
-	#### Compile and simulation
-	#xvlog \
-	#	--sv \
-	#	${SIM_OPT} \
-	#	${INCLUDE} \
-	#	${DEFINES} \
-	#	${TEST_FILE} \
-	#	${LIB_FILE} \
-	#	${RTL_FILE}
-
-	#if ( $? =~ 1 ) then
-	#	echo "Failed at compilation!"
-	#	exit
-	#endif
-
-
-
-	#if ( $Waves ) then
-	#	set xelab_option = "--debug all"
-	#	set xsim_option = "--tclbatch ./xilinx/xwaves.tcl --wdb waves.wdb"
-	#else
-	#	set xelab_option = ""
-	#	set xsim_option = "--R"
-	#endif
-
-	#xelab ${xelab_option} ${TOP_MODULE}_test
-	#if ( $? =~ 1 ) then
-	#	echo "Failed at elaboration!"
-	#	exit
-	#endif
-
-	#xsim ${xsim_option} ${TOP_MODULE}_test
-	#if ( $? =~ 1 ) then
-	#	echo "Simulation failed!"
-	#	exit
-	#endif
 else
 	${SIM_TOOL} \
 		${SIM_OPT} \
@@ -383,6 +443,6 @@ else
 		${INCLUDE} \
 		${DEFINES} \
 		${TEST_FILE} \
-		${LIB_FILE} \
-		${RTL_FILE}
+		${RTL_FILE} \
+		${LIBS}
 endif

@@ -18,6 +18,7 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 add_files -fileset sim_1 -scan_for_includes ${INCLUDE_DIRS} ${TEST_FILES}
 
 # set top module
+set_property top ${TOP} [get_filesets -quiet sources_1]
 set_property top ${TEST_MODULE} [get_filesets -quiet sim_1]
 
 # set verilog defines

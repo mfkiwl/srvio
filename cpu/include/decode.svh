@@ -21,6 +21,7 @@
 typedef union packed {
 	AluCommand_t		alu;
 	DivCommand_t		div;
+	CsrCommand_t		csr;
 	MemCommand_t		mem;
 } OpCommand_t;
 
@@ -36,17 +37,17 @@ typedef union packed {
 `define ImmWidth		26
 //*** Immediate shift encoding
 typedef enum logic [`ImmShift] {
-	IMM_NO_SHIFT	= `ImmShiftWidth'b00,
-	IMM_SHIFT1		= `ImmShiftWidth'b01,
-	IMM_SHIFT12		= `ImmShiftWidth'b10
+	IMM_NO_SHIFT	= 'b00,
+	IMM_SHIFT1		= 'b01,
+	IMM_SHIFT12		= 'b10
 } ImmShift_t;
 
 //*** Immediate bit width encoding
 typedef enum logic [`ImmSize] {
-	IMM_SIZE5		= `ImmSizeWidth'b00,
-	IMM_SIZE5_12	= `ImmSizeWidth'b01,	// CSR specific
-	IMM_SIZE12		= `ImmSizeWidth'b10,
-	IMM_SIZE20		= `ImmSizeWidth'b11
+	IMM_SIZE5		= 'b00,
+	IMM_SIZE5_12	= 'b01,		// CSR specific
+	IMM_SIZE12		= 'b10,
+	IMM_SIZE20		= 'b11
 } ImmSize_t;
 
 typedef struct packed {

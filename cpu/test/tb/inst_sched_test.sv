@@ -134,7 +134,7 @@ module inst_sched_test;
 
 		//***** Entry test
 		//		issue order:
-		//		iq_id[1] -> iq_id[2] -> iq_id[0] -> iq_id[3]
+		//		iq_id[1] -> iq_id[2] -> iq_id[1] -> iq_id[0] -> iq_id[3]
 		$display("Entry add and issue test");
 		#(STEP);
 		add_entry_ = `Enable_;
@@ -177,6 +177,16 @@ module inst_sched_test;
 		dec_unit = UNIT_ALU;
 		dec_iq_id = 3;
 		#(STEP);
+		//*** depende on already written-back instruction
+		add_entry_ = `Enable_;
+		ren_rd = '{regtype: TYPE_ROB, addr: 3};
+		ren_rs1 = '{regtype: TYPE_ROB, addr: 5};
+		ren_rs1_ready = `Enable;
+		ren_rs2 = '{regtype: TYPE_ROB, addr: 6};
+		ren_rs2_ready = `Enable;
+		dec_unit = UNIT_ALU;
+		dec_iq_id = 4;
+		#(STEP);
 		dec_clear;
 		//*** write back
 		#(STEP);
@@ -191,7 +201,7 @@ module inst_sched_test;
 		reset_ = `Disable_;
 		#(STEP*5);
 
-		//***** Forwarding test (ALU)
+		//***** Intra-unit Forwarding test (ALU)
 		add_entry_ = `Enable_;
 		ren_rd = '{regtype: TYPE_ROB, addr: 2};
 		ren_rs1 = '{regtype: TYPE_ROB, addr: 0};
@@ -201,7 +211,6 @@ module inst_sched_test;
 		dec_unit = UNIT_ALU;
 		dec_iq_id = 0;
 		#(STEP);
-		//***** Issue stall on execution unit busy
 		add_entry_ = `Enable_;
 		ren_rd = '{regtype: TYPE_ROB, addr: 3};
 		ren_rs1 = '{regtype: TYPE_ROB, addr: 2};
@@ -216,8 +225,50 @@ module inst_sched_test;
 		// writeback
 		wb_e_ = `Enable_;
 		wb_rd = '{regtype: TYPE_ROB, addr : 0};
+		#(STEP);
+		wb_clear;
 
 		#(STEP*5);
+		reset_ = `Enable_;
+		#(STEP);
+		reset_ = `Disable_;
+		#(STEP);
+
+		//***** Inter-unit Forwarding test (ALU -> MEM)
+		add_entry_ = `Enable_;
+		ren_rd = '{regtype: TYPE_ROB, addr: 2};
+		ren_rs1 = '{regtype: TYPE_ROB, addr: 0};
+		ren_rs1_ready = `Disable;
+		ren_rs2 = '{regtype: TYPE_IMM, addr: 0};
+		ren_rs2_ready = `Disable;
+		dec_unit = UNIT_ALU;
+		dec_iq_id = 0;
+		#(STEP);
+		add_entry_ = `Enable_;
+		ren_rd = '{regtype: TYPE_ROB, addr: 3};
+		ren_rs1 = '{regtype: TYPE_ROB, addr: 2};
+		ren_rs1_ready = `Disable;
+		ren_rs2 = '{regtype: TYPE_ROB, addr: 4};
+		ren_rs2_ready = `Enable;
+		dec_unit = UNIT_MEM;
+		dec_iq_id = 0;
+		#(STEP);
+		dec_clear;
+		#(STEP);
+		// writeback
+		wb_e_ = `Enable_;
+		wb_rd = '{regtype: TYPE_ROB, addr : 0};
+		#(STEP);
+		wb_clear;
+
+		//***** Inter-unit Dependence test (MEM -> ALU)
+		//***		In this case, ALU inst must wait until mem writeback
+
+		#(STEP*5);
+		reset_ = `Enable_;
+		#(STEP);
+		reset_ = `Disable_;
+		#(STEP);
 
 		//***** Forwarding test (FPU)
 		add_entry_ = `Enable_;
@@ -229,7 +280,6 @@ module inst_sched_test;
 		dec_unit = UNIT_FPU;
 		dec_iq_id = 0;
 		#(STEP);
-		//***** Issue stall on execution unit busy
 		add_entry_ = `Enable_;
 		ren_rd = '{regtype: TYPE_ROB, addr: 3};
 		ren_rs1 = '{regtype: TYPE_ROB, addr: 2};
@@ -244,6 +294,8 @@ module inst_sched_test;
 		// writeback
 		wb_e_ = `Enable_;
 		wb_rd = '{regtype: TYPE_ROB, addr : 0};
+		#(STEP);
+		wb_clear;
 
 		#(STEP*5);
 

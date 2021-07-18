@@ -23,9 +23,9 @@
 `define PrivLvWidth		2
 `define PrivLv			`PrivLvWidth-1:0
 typedef enum logic [`PrivLv] {
-	PRIV_USER		= `PrivLvWidth'b00,		// user mode
-	PRIV_SV			= `PrivLvWidth'b01,		// supervisor mode
-	PRIV_MACHINE	= `PrivLvWidth'b11		// machine mode 
+	PRIV_USER		= 'b00,		// user mode
+	PRIV_SV			= 'b01,		// supervisor mode
+	PRIV_MACHINE	= 'b11		// machine mode 
 } PrivLw_t;
 
 
@@ -33,140 +33,140 @@ typedef enum logic [`PrivLv] {
 //***** List of Control & Status Registers
 //*** User Trap Setup
 //* User Status Register
-`define CsrUSTATUS			`CsrAddrWidth'h000
+`define CsrUSTATUS			'h000
 //* User Interrupt Enable
-`define CsrUIE				`CsrAddrWidth'h004
+`define CsrUIE				'h004
 //* User Trap Handler Base Address
-`define CsrUTVEC			`CsrAddrWidth'h005
+`define CsrUTVEC			'h005
 
 //*** User Trap Handling
 //* Scratch Register for User Trap Handlers
-`define CsrUSCRATCH			`CsrAddrWidth'h040
+`define CsrUSCRATCH			'h040
 //* User Exception Program Counter
-`define CsrUEPC				`CsrAddrWidth'h041
+`define CsrUEPC				'h041
 //* User Trap Cause
-`define CsrUCAUSE			`CsrAddrWidth'h042
+`define CsrUCAUSE			'h042
 //* User Bad Address or Instruction
-`define CsrUTVAL			`CsrAddrWidth'h043
+`define CsrUTVAL			'h043
 //* User Interrupt Pending
-`define CsrUIP				`CsrAddrWidth'h044
+`define CsrUIP				'h044
 
 //*** User Floating Point CSR
 //* Floating-Point Accrued Exceptions
-`define CsrFFLAGS			`CsrAddrWidth'h001
+`define CsrFFLAGS			'h001
 //* Floating-Point Dynamic Rounding Mode
-`define CsrFRM				`CsrAddrWidth'h002
+`define CsrFRM				'h002
 //* Floating-Point Control and Status Register
-`define CsrFCSR				`CsrAddrWidth'h003
+`define CsrFCSR				'h003
 
 //*** User Counter/Timers
 //* Cycle Counter for RDCYCLE instruction
-`define CsrCYCLE			`CsrAddrWidth'hc00
-`define CsrCYCLEH			`CsrAddrWidth'hc80	// RV32 only
+`define CsrCYCLE			'hc00
+`define CsrCYCLEH			'hc80	// RV32 only
 //* Timer for RDTIME instruction
-`define CsrTIME				`CsrAddrWidth'hc01
-`define CsrTIMEH			`CsrAddrWidth'hc81	// RV32 only
+`define CsrTIME				'hc01
+`define CsrTIMEH			'hc81	// RV32 only
 //* Instruction-retired counter for RDINSTRET instruction
-`define CsrINSTRET			`CsrAddrWidth'hc02
-`define CsrINSTRETH			`CsrAddrWidth'hc82	// RV32 only
+`define CsrINSTRET			'hc02
+`define CsrINSTRETH			'hc82	// RV32 only
 //* Performance-monitoring Counter
-`define CsrHPMCOUNTER3		`CsrAddrWidth'hc03
-`define CsrHPMCOUNTER4		`CsrAddrWidth'hc04
-`define CsrHPMCOUNTER5		`CsrAddrWidth'hc05
-`define CsrHPMCOUNTER6		`CsrAddrWidth'hc06
-`define CsrHPMCOUNTER7		`CsrAddrWidth'hc07
-`define CsrHPMCOUNTER8		`CsrAddrWidth'hc08
-`define CsrHPMCOUNTER9		`CsrAddrWidth'hc09
-`define CsrHPMCOUNTER10		`CsrAddrWidth'hc0a
-`define CsrHPMCOUNTER11		`CsrAddrWidth'hc0b
-`define CsrHPMCOUNTER12		`CsrAddrWidth'hc0c
-`define CsrHPMCOUNTER13		`CsrAddrWidth'hc0d
-`define CsrHPMCOUNTER14		`CsrAddrWidth'hc0e
-`define CsrHPMCOUNTER15		`CsrAddrWidth'hc0f
-`define CsrHPMCOUNTER16		`CsrAddrWidth'hc10
-`define CsrHPMCOUNTER17		`CsrAddrWidth'hc11
-`define CsrHPMCOUNTER18		`CsrAddrWidth'hc12
-`define CsrHPMCOUNTER19		`CsrAddrWidth'hc13
-`define CsrHPMCOUNTER20		`CsrAddrWidth'hc14
-`define CsrHPMCOUNTER21		`CsrAddrWidth'hc15
-`define CsrHPMCOUNTER22		`CsrAddrWidth'hc16
-`define CsrHPMCOUNTER23		`CsrAddrWidth'hc17
-`define CsrHPMCOUNTER24		`CsrAddrWidth'hc18
-`define CsrHPMCOUNTER25		`CsrAddrWidth'hc19
-`define CsrHPMCOUNTER26		`CsrAddrWidth'hc1a
-`define CsrHPMCOUNTER27		`CsrAddrWidth'hc1b
-`define CsrHPMCOUNTER28		`CsrAddrWidth'hc1c
-`define CsrHPMCOUNTER29		`CsrAddrWidth'hc1d
-`define CsrHPMCOUNTER30		`CsrAddrWidth'hc1e
-`define CsrHPMCOUNTER31		`CsrAddrWidth'hc1f
-`define CsrHPMCOUNTER3H		`CsrAddrWidth'hc03	// only for RV32
-`define CsrHPMCOUNTER4H		`CsrAddrWidth'hc04
-`define CsrHPMCOUNTER5H		`CsrAddrWidth'hc05
-`define CsrHPMCOUNTER6H		`CsrAddrWidth'hc06
-`define CsrHPMCOUNTER7H		`CsrAddrWidth'hc07
-`define CsrHPMCOUNTER8H		`CsrAddrWidth'hc08
-`define CsrHPMCOUNTER9H		`CsrAddrWidth'hc09
-`define CsrHPMCOUNTER10H	`CsrAddrWidth'hc0a
-`define CsrHPMCOUNTER11H	`CsrAddrWidth'hc0b
-`define CsrHPMCOUNTER12H	`CsrAddrWidth'hc0c
-`define CsrHPMCOUNTER13H	`CsrAddrWidth'hc0d
-`define CsrHPMCOUNTER14H	`CsrAddrWidth'hc0e
-`define CsrHPMCOUNTER15H	`CsrAddrWidth'hc0f
-`define CsrHPMCOUNTER16H	`CsrAddrWidth'hc10
-`define CsrHPMCOUNTER17H	`CsrAddrWidth'hc11
-`define CsrHPMCOUNTER18H	`CsrAddrWidth'hc12
-`define CsrHPMCOUNTER19H	`CsrAddrWidth'hc13
-`define CsrHPMCOUNTER20H	`CsrAddrWidth'hc14
-`define CsrHPMCOUNTER21H	`CsrAddrWidth'hc15
-`define CsrHPMCOUNTER22H	`CsrAddrWidth'hc16
-`define CsrHPMCOUNTER23H	`CsrAddrWidth'hc17
-`define CsrHPMCOUNTER24H	`CsrAddrWidth'hc18
-`define CsrHPMCOUNTER25H	`CsrAddrWidth'hc19
-`define CsrHPMCOUNTER26H	`CsrAddrWidth'hc1a
-`define CsrHPMCOUNTER27H	`CsrAddrWidth'hc1b
-`define CsrHPMCOUNTER28H	`CsrAddrWidth'hc1c
-`define CsrHPMCOUNTER29H	`CsrAddrWidth'hc1d
-`define CsrHPMCOUNTER30H	`CsrAddrWidth'hc1e
-`define CsrHPMCOUNTER31H	`CsrAddrWidth'hc1f
+`define CsrHPMCOUNTER3		'hc03
+`define CsrHPMCOUNTER4		'hc04
+`define CsrHPMCOUNTER5		'hc05
+`define CsrHPMCOUNTER6		'hc06
+`define CsrHPMCOUNTER7		'hc07
+`define CsrHPMCOUNTER8		'hc08
+`define CsrHPMCOUNTER9		'hc09
+`define CsrHPMCOUNTER10		'hc0a
+`define CsrHPMCOUNTER11		'hc0b
+`define CsrHPMCOUNTER12		'hc0c
+`define CsrHPMCOUNTER13		'hc0d
+`define CsrHPMCOUNTER14		'hc0e
+`define CsrHPMCOUNTER15		'hc0f
+`define CsrHPMCOUNTER16		'hc10
+`define CsrHPMCOUNTER17		'hc11
+`define CsrHPMCOUNTER18		'hc12
+`define CsrHPMCOUNTER19		'hc13
+`define CsrHPMCOUNTER20		'hc14
+`define CsrHPMCOUNTER21		'hc15
+`define CsrHPMCOUNTER22		'hc16
+`define CsrHPMCOUNTER23		'hc17
+`define CsrHPMCOUNTER24		'hc18
+`define CsrHPMCOUNTER25		'hc19
+`define CsrHPMCOUNTER26		'hc1a
+`define CsrHPMCOUNTER27		'hc1b
+`define CsrHPMCOUNTER28		'hc1c
+`define CsrHPMCOUNTER29		'hc1d
+`define CsrHPMCOUNTER30		'hc1e
+`define CsrHPMCOUNTER31		'hc1f
+`define CsrHPMCOUNTER3H		'hc03	// only for RV32
+`define CsrHPMCOUNTER4H		'hc04
+`define CsrHPMCOUNTER5H		'hc05
+`define CsrHPMCOUNTER6H		'hc06
+`define CsrHPMCOUNTER7H		'hc07
+`define CsrHPMCOUNTER8H		'hc08
+`define CsrHPMCOUNTER9H		'hc09
+`define CsrHPMCOUNTER10H	'hc0a
+`define CsrHPMCOUNTER11H	'hc0b
+`define CsrHPMCOUNTER12H	'hc0c
+`define CsrHPMCOUNTER13H	'hc0d
+`define CsrHPMCOUNTER14H	'hc0e
+`define CsrHPMCOUNTER15H	'hc0f
+`define CsrHPMCOUNTER16H	'hc10
+`define CsrHPMCOUNTER17H	'hc11
+`define CsrHPMCOUNTER18H	'hc12
+`define CsrHPMCOUNTER19H	'hc13
+`define CsrHPMCOUNTER20H	'hc14
+`define CsrHPMCOUNTER21H	'hc15
+`define CsrHPMCOUNTER22H	'hc16
+`define CsrHPMCOUNTER23H	'hc17
+`define CsrHPMCOUNTER24H	'hc18
+`define CsrHPMCOUNTER25H	'hc19
+`define CsrHPMCOUNTER26H	'hc1a
+`define CsrHPMCOUNTER27H	'hc1b
+`define CsrHPMCOUNTER28H	'hc1c
+`define CsrHPMCOUNTER29H	'hc1d
+`define CsrHPMCOUNTER30H	'hc1e
+`define CsrHPMCOUNTER31H	'hc1f
 
 //*** Supervisor Trap Status
 //* Supervisor status register
-`define CsrSSTATUS			`CsrAddrWidth'h100
+`define CsrSSTATUS			'h100
 //* Supervisor exception delegation register
-`define CsrSEDELEG			`CsrAddrWidth'h102
+`define CsrSEDELEG			'h102
 //* Supervisor interrupt delegation register
-`define CsrSIDELEG			`CsrAddrWidth'h103
+`define CsrSIDELEG			'h103
 //* Supervisor interrupt-enable register
-`define CsrSIE				`CsrAddrWidth'h104
+`define CsrSIE				'h104
 //* Supervisor trap handler base address
-`define CsrSTVEC			`CsrAddrWidth'h105
+`define CsrSTVEC			'h105
 //* Supervisor counter enable
-`define CsrSCOUNTEREN		`CsrAddrWidth'h106
+`define CsrSCOUNTEREN		'h106
 
 //*** Supervisor Trap Handling
 //* Scratch register for supervisor trap handlers
-`define CsrSSCRATCH			`CsrAddrWidth'h140
+`define CsrSSCRATCH			'h140
 //* Supervisor exception program counter
-`define CsrSEPC				`CsrAddrWidth'h141
+`define CsrSEPC				'h141
 //* Supervisor trap cause
-`define CsrSCAUSE			`CsrAddrWidth'h142
+`define CsrSCAUSE			'h142
 //* Supervisor bad address or instruction
-`define CsrSTVAL			`CsrAddrWidth'h143
+`define CsrSTVAL			'h143
 //* Supervisor interrupt pending
-`define CsrSIP				`CsrAddrWidth'h144
+`define CsrSIP				'h144
 
 //*** Supervisor Protection and Translatoin
 //* Supervisor address translation and protection
-`define CsrSATP				`CsrAddrWidth'h180
+`define CsrSATP				'h180
 `ifdef CPU64 //64bit cpu
  `define CsrSATP_MODE		4
  `define CsrSATP_ASID		16
  `define CsrSATP_PPN		44
- `define CsrSATP_MODE_BARE	`SATP_MODE'b0000
- `define CsrSATP_MODE_SV37	`SATP_MODE'b1000
- `define CsrSATP_MODE_SV48	`SATP_MODE'b1001
- `define CsrSATP_MODE_SV57	`SATP_MODE'b1010
- `define CsrSATP_MODE_SV64	`SATP_MODE'b1011
+ `define CsrSATP_MODE_BARE	'b0000
+ `define CsrSATP_MODE_SV37	'b1000
+ `define CsrSATP_MODE_SV48	'b1001
+ `define CsrSATP_MODE_SV57	'b1010
+ `define CsrSATP_MODE_SV64	'b1011
 `else // 32bit cpu
  `define CsrSATP_MODE		1
  `define CsrSATP_ASID		9
@@ -177,17 +177,17 @@ typedef enum logic [`PrivLv] {
 
 //*** Machine Information Register
 //* Vendor ID
-`define CsrMVENDORID		`CsrAddrWidth'hf11
+`define CsrMVENDORID		'hf11
 //* Architecture ID
-`define CsrMARCHID			`CsrAddrWidth'hf12
+`define CsrMARCHID			'hf12
 //* Implementation ID
-`define CsrMIMPID			`CsrAddrWidth'hf13
+`define CsrMIMPID			'hf13
 //* Hardware thread ID
-`define CsrMHARTID			`CsrAddrWidth'hf14
+`define CsrMHARTID			'hf14
 
 //*** Machine Trap Setup
 //* Machine status register (also read from
-`define CsrMSTATUS			`CsrAddrWidth'h300
+`define CsrMSTATUS			'h300
 `define CsrMST_MPP			2
 `define CsrMST_FS			2
 `define CsrMST_XS			2
@@ -206,160 +206,160 @@ typedef enum logic [`PrivLv] {
  `define CsrMST_WPRI3		8		// reserved part3 [30:23]
 `endif
 //* ISA and extensions
-`define CsrMISA				`CsrAddrWidth'h301
+`define CsrMISA				'h301
 //* Machine exception delegation register
-`define CsrMEDELEG			`CsrAddrWidth'h302
+`define CsrMEDELEG			'h302
 //* Machine interrupt delegation register
-`define CsrMIDELEG			`CsrAddrWidth'h303
+`define CsrMIDELEG			'h303
 //* Machine interrupt-enable register
-`define CsrMIE				`CsrAddrWidth'h304
+`define CsrMIE				'h304
 //* Machine trap-handler base address
-`define CsrMTVEC			`CsrAddrWidth'h305
+`define CsrMTVEC			'h305
 //* Machine counter enable
-`define CsrMCOUNTEREN		`CsrAddrWidth'h306
+`define CsrMCOUNTEREN		'h306
 
 //*** Machine Trap Handling
 //* Scratch register for machine trap handlers
-`define CsrMSCRATCH			`CsrAddrWidth'h340
+`define CsrMSCRATCH			'h340
 //* Machine exception program counter
-`define CsrMEPC				`CsrAddrWidth'h341
+`define CsrMEPC				'h341
 //* Machine trap cause
-`define CsrMCAUSE			`CsrAddrWidth'h342
+`define CsrMCAUSE			'h342
 //* Machine bad address or instruction
-`define CsrMTVAL			`CsrAddrWidth'h343
+`define CsrMTVAL			'h343
 //* Machine interrupt pending
-`define CsrMIP				`CsrAddrWidth'h344
+`define CsrMIP				'h344
 
 //*** Machine Protection and Translation
 //* physical memory protection configuration
-`define CsrPMPCFG0			`CsrAddrWidth'h3a0
-`define CsrPMPCFG1			`CsrAddrWidth'h3a1	// RV32 only
-`define CsrPMPCFG2			`CsrAddrWidth'h3a2
-`define CsrPMPCFG3			`CsrAddrWidth'h3a3	// RV32 only
+`define CsrPMPCFG0			'h3a0
+`define CsrPMPCFG1			'h3a1	// RV32 only
+`define CsrPMPCFG2			'h3a2
+`define CsrPMPCFG3			'h3a3	// RV32 only
 //* physical memory protection address register
-`define CsrPMPADDR0			`CsrAddrWidth'h3b0
-`define CsrPMPADDR1			`CsrAddrWidth'h3b1
-`define CsrPMPADDR2			`CsrAddrWidth'h3b2
-`define CsrPMPADDR3			`CsrAddrWidth'h3b3
-`define CsrPMPADDR4			`CsrAddrWidth'h3b4
-`define CsrPMPADDR5			`CsrAddrWidth'h3b5
-`define CsrPMPADDR6			`CsrAddrWidth'h3b6
-`define CsrPMPADDR7			`CsrAddrWidth'h3b7
-`define CsrPMPADDR8			`CsrAddrWidth'h3b8
-`define CsrPMPADDR9			`CsrAddrWidth'h3b9
-`define CsrPMPADDR10		`CsrAddrWidth'h3ba
-`define CsrPMPADDR11		`CsrAddrWidth'h3bb
-`define CsrPMPADDR12		`CsrAddrWidth'h3bc
-`define CsrPMPADDR13		`CsrAddrWidth'h3bd
-`define CsrPMPADDR14		`CsrAddrWidth'h3be
-`define CsrPMPADDR15		`CsrAddrWidth'h3bf
+`define CsrPMPADDR0			'h3b0
+`define CsrPMPADDR1			'h3b1
+`define CsrPMPADDR2			'h3b2
+`define CsrPMPADDR3			'h3b3
+`define CsrPMPADDR4			'h3b4
+`define CsrPMPADDR5			'h3b5
+`define CsrPMPADDR6			'h3b6
+`define CsrPMPADDR7			'h3b7
+`define CsrPMPADDR8			'h3b8
+`define CsrPMPADDR9			'h3b9
+`define CsrPMPADDR10		'h3ba
+`define CsrPMPADDR11		'h3bb
+`define CsrPMPADDR12		'h3bc
+`define CsrPMPADDR13		'h3bd
+`define CsrPMPADDR14		'h3be
+`define CsrPMPADDR15		'h3bf
 
 //*** Machine Counter/Times
-`define CsrMCYCLE			`CsrAddrWidth'hb00
-`define CsrMINSTRET			`CsrAddrWidth'hb02
+`define CsrMCYCLE			'hb00
+`define CsrMINSTRET			'hb02
 //* Performance-monitoring Counter
-`define CsrMHPMCOUNTER3		`CsrAddrWidth'hc03
-`define CsrMHPMCOUNTER4		`CsrAddrWidth'hc04
-`define CsrMHPMCOUNTER5		`CsrAddrWidth'hc05
-`define CsrMHPMCOUNTER6		`CsrAddrWidth'hc06
-`define CsrMHPMCOUNTER7		`CsrAddrWidth'hc07
-`define CsrMHPMCOUNTER8		`CsrAddrWidth'hc08
-`define CsrMHPMCOUNTER9		`CsrAddrWidth'hc09
-`define CsrMHPMCOUNTER10	`CsrAddrWidth'hc0a
-`define CsrMHPMCOUNTER11	`CsrAddrWidth'hc0b
-`define CsrMHPMCOUNTER12	`CsrAddrWidth'hc0c
-`define CsrMHPMCOUNTER13	`CsrAddrWidth'hc0d
-`define CsrMHPMCOUNTER14	`CsrAddrWidth'hc0e
-`define CsrMHPMCOUNTER15	`CsrAddrWidth'hc0f
-`define CsrMHPMCOUNTER16	`CsrAddrWidth'hc10
-`define CsrMHPMCOUNTER17	`CsrAddrWidth'hc11
-`define CsrMHPMCOUNTER18	`CsrAddrWidth'hc12
-`define CsrMHPMCOUNTER19	`CsrAddrWidth'hc13
-`define CsrMHPMCOUNTER20	`CsrAddrWidth'hc14
-`define CsrMHPMCOUNTER21	`CsrAddrWidth'hc15
-`define CsrMHPMCOUNTER22	`CsrAddrWidth'hc16
-`define CsrMHPMCOUNTER23	`CsrAddrWidth'hc17
-`define CsrMHPMCOUNTER24	`CsrAddrWidth'hc18
-`define CsrMHPMCOUNTER25	`CsrAddrWidth'hc19
-`define CsrMHPMCOUNTER26	`CsrAddrWidth'hc1a
-`define CsrMHPMCOUNTER27	`CsrAddrWidth'hc1b
-`define CsrMHPMCOUNTER28	`CsrAddrWidth'hc1c
-`define CsrMHPMCOUNTER29	`CsrAddrWidth'hc1d
-`define CsrMHPMCOUNTER30	`CsrAddrWidth'hc1e
-`define CsrMHPMCOUNTER31	`CsrAddrWidth'hc1f
-`define CsrMHPMCOUNTER3H	`CsrAddrWidth'hc03	// only for RV32
-`define CsrMHPMCOUNTER4H	`CsrAddrWidth'hc04
-`define CsrMHPMCOUNTER5H	`CsrAddrWidth'hc05
-`define CsrMHPMCOUNTER6H	`CsrAddrWidth'hc06
-`define CsrMHPMCOUNTER7H	`CsrAddrWidth'hc07
-`define CsrMHPMCOUNTER8H	`CsrAddrWidth'hc08
-`define CsrMHPMCOUNTER9H	`CsrAddrWidth'hc09
-`define CsrMHPMCOUNTER10H	`CsrAddrWidth'hc0a
-`define CsrMHPMCOUNTER11H	`CsrAddrWidth'hc0b
-`define CsrMHPMCOUNTER12H	`CsrAddrWidth'hc0c
-`define CsrMHPMCOUNTER13H	`CsrAddrWidth'hc0d
-`define CsrMHPMCOUNTER14H	`CsrAddrWidth'hc0e
-`define CsrMHPMCOUNTER15H	`CsrAddrWidth'hc0f
-`define CsrMHPMCOUNTER16H	`CsrAddrWidth'hc10
-`define CsrMHPMCOUNTER17H	`CsrAddrWidth'hc11
-`define CsrMHPMCOUNTER18H	`CsrAddrWidth'hc12
-`define CsrMHPMCOUNTER19H	`CsrAddrWidth'hc13
-`define CsrMHPMCOUNTER20H	`CsrAddrWidth'hc14
-`define CsrMHPMCOUNTER21H	`CsrAddrWidth'hc15
-`define CsrMHPMCOUNTER22H	`CsrAddrWidth'hc16
-`define CsrMHPMCOUNTER23H	`CsrAddrWidth'hc17
-`define CsrMHPMCOUNTER24H	`CsrAddrWidth'hc18
-`define CsrMHPMCOUNTER25H	`CsrAddrWidth'hc19
-`define CsrMHPMCOUNTER26H	`CsrAddrWidth'hc1a
-`define CsrMHPMCOUNTER27H	`CsrAddrWidth'hc1b
-`define CsrMHPMCOUNTER28H	`CsrAddrWidth'hc1c
-`define CsrMHPMCOUNTER29H	`CsrAddrWidth'hc1d
-`define CsrMHPMCOUNTER30H	`CsrAddrWidth'hc1e
-`define CsrMHPMCOUNTER31H	`CsrAddrWidth'hc1f
+`define CsrMHPMCOUNTER3		'hc03
+`define CsrMHPMCOUNTER4		'hc04
+`define CsrMHPMCOUNTER5		'hc05
+`define CsrMHPMCOUNTER6		'hc06
+`define CsrMHPMCOUNTER7		'hc07
+`define CsrMHPMCOUNTER8		'hc08
+`define CsrMHPMCOUNTER9		'hc09
+`define CsrMHPMCOUNTER10	'hc0a
+`define CsrMHPMCOUNTER11	'hc0b
+`define CsrMHPMCOUNTER12	'hc0c
+`define CsrMHPMCOUNTER13	'hc0d
+`define CsrMHPMCOUNTER14	'hc0e
+`define CsrMHPMCOUNTER15	'hc0f
+`define CsrMHPMCOUNTER16	'hc10
+`define CsrMHPMCOUNTER17	'hc11
+`define CsrMHPMCOUNTER18	'hc12
+`define CsrMHPMCOUNTER19	'hc13
+`define CsrMHPMCOUNTER20	'hc14
+`define CsrMHPMCOUNTER21	'hc15
+`define CsrMHPMCOUNTER22	'hc16
+`define CsrMHPMCOUNTER23	'hc17
+`define CsrMHPMCOUNTER24	'hc18
+`define CsrMHPMCOUNTER25	'hc19
+`define CsrMHPMCOUNTER26	'hc1a
+`define CsrMHPMCOUNTER27	'hc1b
+`define CsrMHPMCOUNTER28	'hc1c
+`define CsrMHPMCOUNTER29	'hc1d
+`define CsrMHPMCOUNTER30	'hc1e
+`define CsrMHPMCOUNTER31	'hc1f
+`define CsrMHPMCOUNTER3H	'hc03	// only for RV32
+`define CsrMHPMCOUNTER4H	'hc04
+`define CsrMHPMCOUNTER5H	'hc05
+`define CsrMHPMCOUNTER6H	'hc06
+`define CsrMHPMCOUNTER7H	'hc07
+`define CsrMHPMCOUNTER8H	'hc08
+`define CsrMHPMCOUNTER9H	'hc09
+`define CsrMHPMCOUNTER10H	'hc0a
+`define CsrMHPMCOUNTER11H	'hc0b
+`define CsrMHPMCOUNTER12H	'hc0c
+`define CsrMHPMCOUNTER13H	'hc0d
+`define CsrMHPMCOUNTER14H	'hc0e
+`define CsrMHPMCOUNTER15H	'hc0f
+`define CsrMHPMCOUNTER16H	'hc10
+`define CsrMHPMCOUNTER17H	'hc11
+`define CsrMHPMCOUNTER18H	'hc12
+`define CsrMHPMCOUNTER19H	'hc13
+`define CsrMHPMCOUNTER20H	'hc14
+`define CsrMHPMCOUNTER21H	'hc15
+`define CsrMHPMCOUNTER22H	'hc16
+`define CsrMHPMCOUNTER23H	'hc17
+`define CsrMHPMCOUNTER24H	'hc18
+`define CsrMHPMCOUNTER25H	'hc19
+`define CsrMHPMCOUNTER26H	'hc1a
+`define CsrMHPMCOUNTER27H	'hc1b
+`define CsrMHPMCOUNTER28H	'hc1c
+`define CsrMHPMCOUNTER29H	'hc1d
+`define CsrMHPMCOUNTER30H	'hc1e
+`define CsrMHPMCOUNTER31H	'hc1f
 
 //*** Machine Counter Setup
-`define CsrMHPMEVENT3		`CsrAddrWidth'h323
-`define CsrMHPMEVENT4		`CsrAddrWidth'h324
-`define CsrMHPMEVENT5		`CsrAddrWidth'h325
-`define CsrMHPMEVENT6		`CsrAddrWidth'h326
-`define CsrMHPMEVENT7		`CsrAddrWidth'h327
-`define CsrMHPMEVENT8		`CsrAddrWidth'h328
-`define CsrMHPMEVENT9		`CsrAddrWidth'h329
-`define CsrMHPMEVENT10		`CsrAddrWidth'h32a
-`define CsrMHPMEVENT11		`CsrAddrWidth'h32b
-`define CsrMHPMEVENT12		`CsrAddrWidth'h32c
-`define CsrMHPMEVENT13		`CsrAddrWidth'h32d
-`define CsrMHPMEVENT14		`CsrAddrWidth'h32e
-`define CsrMHPMEVENT15		`CsrAddrWidth'h32f
-`define CsrMHPMEVENT16		`CsrAddrWidth'h330
-`define CsrMHPMEVENT17		`CsrAddrWidth'h331
-`define CsrMHPMEVENT18		`CsrAddrWidth'h332
-`define CsrMHPMEVENT19		`CsrAddrWidth'h333
-`define CsrMHPMEVENT20		`CsrAddrWidth'h334
-`define CsrMHPMEVENT21		`CsrAddrWidth'h335
-`define CsrMHPMEVENT22		`CsrAddrWidth'h336
-`define CsrMHPMEVENT23		`CsrAddrWidth'h337
-`define CsrMHPMEVENT24		`CsrAddrWidth'h338
-`define CsrMHPMEVENT25		`CsrAddrWidth'h339
-`define CsrMHPMEVENT26		`CsrAddrWidth'h33a
-`define CsrMHPMEVENT27		`CsrAddrWidth'h33b
-`define CsrMHPMEVENT28		`CsrAddrWidth'h33c
-`define CsrMHPMEVENT29		`CsrAddrWidth'h33d
-`define CsrMHPMEVENT30		`CsrAddrWidth'h33e
-`define CsrMHPMEVENT31		`CsrAddrWidth'h33f
+`define CsrMHPMEVENT3		'h323
+`define CsrMHPMEVENT4		'h324
+`define CsrMHPMEVENT5		'h325
+`define CsrMHPMEVENT6		'h326
+`define CsrMHPMEVENT7		'h327
+`define CsrMHPMEVENT8		'h328
+`define CsrMHPMEVENT9		'h329
+`define CsrMHPMEVENT10		'h32a
+`define CsrMHPMEVENT11		'h32b
+`define CsrMHPMEVENT12		'h32c
+`define CsrMHPMEVENT13		'h32d
+`define CsrMHPMEVENT14		'h32e
+`define CsrMHPMEVENT15		'h32f
+`define CsrMHPMEVENT16		'h330
+`define CsrMHPMEVENT17		'h331
+`define CsrMHPMEVENT18		'h332
+`define CsrMHPMEVENT19		'h333
+`define CsrMHPMEVENT20		'h334
+`define CsrMHPMEVENT21		'h335
+`define CsrMHPMEVENT22		'h336
+`define CsrMHPMEVENT23		'h337
+`define CsrMHPMEVENT24		'h338
+`define CsrMHPMEVENT25		'h339
+`define CsrMHPMEVENT26		'h33a
+`define CsrMHPMEVENT27		'h33b
+`define CsrMHPMEVENT28		'h33c
+`define CsrMHPMEVENT29		'h33d
+`define CsrMHPMEVENT30		'h33e
+`define CsrMHPMEVENT31		'h33f
 
 //*** Debug/Trace Register
 //* Debug/Trace trigger register select
-`define CsrTSELECT			`CsrAddrWidth'h7a0
+`define CsrTSELECT			'h7a0
 //* Debug/Trace trigger data register
-`define CsrTDATA1			`CsrAddrWidth'h7a1
-`define CsrTDATA2			`CsrAddrWidth'h7a2
-`define CsrTDATA3			`CsrAddrWidth'h7a3
+`define CsrTDATA1			'h7a1
+`define CsrTDATA2			'h7a2
+`define CsrTDATA3			'h7a3
 
 //*** Debug Mode Register
-`define CsrDCSR				`CsrAddrWidth'h7b0
-`define CsrDPC				`CsrAddrWidth'h7b1
-`define CsrDSCRATCH			`CsrAddrWidth'h7b2
+`define CsrDCSR				'h7b0
+`define CsrDPC				'h7b1
+`define CsrDSCRATCH			'h7b2
 
 
 

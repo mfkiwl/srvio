@@ -43,15 +43,15 @@ typedef enum logic[`ExeUnitBus] {
 
 //***** Functional unit latency (Actual Latency - 1)
 //*** Latency counter
-`define ExeLatCntWidth	2
+`define ExeLatCntWidth	3
 `define ExeLatCnt		`ExeLatCntWidth-1:0
 //*** Latency of each Functional Unit
-`define AluLatency		`ExeLatCntWidth'd0
-`define DivLatency		`ExeLatCntWidth'd2
-`define FpuLatency		`ExeLatCntWidth'd1
-`define FdivLatency		`ExeLatCntWidth'd2
-`define CsrLatency		`ExeLatCntWidth'd0
-`define MemLatency		`ExeLatCntWidth'd2	// latency without cache miss
+`define AluLatency		'd0
+`define DivLatency		'd4
+`define FpuLatency		'd2
+`define FdivLatency		'd6
+`define CsrLatency		'd0
+`define MemLatency		'd0	// Not used
 
 
 
@@ -59,12 +59,12 @@ typedef enum logic[`ExeUnitBus] {
 //			Lower value means higher priority
 `define ExePriorWidth	2
 `define ExePrior		`ExePriorWidth-1:0
-`define AluPrior		`ExePriorWidth'd0
-`define DivPrior		`ExePriorWidth'd2
-`define FpuPrior		`ExePriorWidth'd1
-`define FdivPrior		`ExePriorWidth'd2
-`define CsrPrior		`ExePriorWidth'd1
-`define MemPrior		`ExePriorWidth'd1
+`define AluPrior		'd0
+`define DivPrior		'd2
+`define FpuPrior		'd1
+`define FdivPrior		'd2
+`define CsrPrior		'd1
+`define MemPrior		'd1
 
 
 
@@ -83,12 +83,12 @@ typedef struct packed {
 //***** ALU Operations
 //*** Operation Type
 typedef enum logic[`ExeOp] {
-	ALU_NOP		= `ExeOpWidth'b000,
-	ALU_ADD		= `ExeOpWidth'b001,
-	ALU_MULT	= `ExeOpWidth'b010,
-	ALU_COMP	= `ExeOpWidth'b011,
-	ALU_SHIFT	= `ExeOpWidth'b100,
-	ALU_LOGIC	= `ExeOpWidth'b101
+	ALU_NOP		= 'b000,
+	ALU_ADD		= 'b001,
+	ALU_MULT	= 'b010,
+	ALU_COMP	= 'b011,
+	ALU_SHIFT	= 'b100,
+	ALU_LOGIC	= 'b101
 } AluOp_t;
 
 //*** Sub-operations
@@ -125,9 +125,9 @@ typedef struct packed {
 
 //***** Integer Divider Operations
 typedef enum logic[`ExeOp] {
-	DIV_NOP = `ExeOpWidth'b000,
-	DIV_DIV = `ExeOpWidth'b001,
-	DIV_REM = `ExeOpWidth'b010
+	DIV_NOP = 'b000,
+	DIV_DIV = 'b001,
+	DIV_REM = 'b010
 } DivOp_t;
 
 //*** Sub-operations
@@ -150,10 +150,10 @@ typedef struct packed {
 //***** CSR Operation
 //*** Operation Type
 typedef enum logic[`ExeOp] {
-	CSR_NOP		= `ExeOpWidth'b000,
-	CSR_RW		= `ExeOpWidth'b001,
-	CSR_RS		= `ExeOpWidth'b010,	// Read and Set Bits
-	CSR_RC		= `ExeOpWidth'b011	// Read and Clear Bits
+	CSR_NOP		= 'b000,
+	CSR_RW		= 'b001,
+	CSR_RS		= 'b010,	// Read and Set Bits
+	CSR_RC		= 'b011		// Read and Clear Bits
 } CsrOp_t;
 
 //*** Sub-Operations
@@ -169,11 +169,11 @@ typedef struct packed {
 //***** Memory Unit Operation
 //*** Operation Type
 typedef enum logic[`ExeOp] {
-	MEM_NOP		= `ExeOpWidth'b000,
-	MEM_LOAD	= `ExeOpWidth'b001,
-	MEM_STORE	= `ExeOpWidth'b010,
-	MEM_AMO		= `ExeOpWidth'b011,
-	MEM_CSR		= `ExeOpWidth'b100
+	MEM_NOP		= 'b000,
+	MEM_LOAD	= 'b001,
+	MEM_STORE	= 'b010,
+	MEM_AMO		= 'b011,
+	MEM_CSR		= 'b100
 } MemOp_t;
 
 //*** Sub-operation
@@ -182,16 +182,16 @@ typedef enum logic[`ExeOp] {
 //* Memory Operation Format
 `define MemSizeWidth		2
 `define MemSize				`MemSizeWidth:1
-`define MemSizeByte			`MemSizeWidth'b00
-`define MemSizeHalf			`MemSizeWidth'b01
-`define MemSizeWord			`MemSizeWidth'b10
-`define MemSizeDouble		`MemSizeWidth'b11
+`define MemSizeByte			'b00
+`define MemSizeHalf			'b01
+`define MemSizeWord			'b10
+`define MemSizeDouble		'b11
 //* Control & Status Register Access
 `define MemCsrOpWidth		2
 `define MemCsrOp			`MemCsrOpWidth-1:0
-`define MemCsrOpRW			`MemCsrOpWidth'b00
-`define MemCsrOpRS			`MemCsrOpWidth'b01
-`define MemCsrOpRC			`MemCsrOpWidth'b10
+`define MemCsrOpRW			'b00
+`define MemCsrOpRS			'b01
+`define MemCsrOpRC			'b10
 
 //*** Mem Command
 typedef struct packed {

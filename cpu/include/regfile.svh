@@ -19,6 +19,7 @@
 `define GprAddr			`GprAddrWidth-1:0		// 4:0
 
 
+
 //***** FPR parameters
 `define FprDepth		32						// FPR Entries
 `define FprWidth		`DoubleBitWidth			// Bit width of FPR (32entry)
@@ -31,13 +32,13 @@
 `define RegTypeWidth	3
 `define RegType			`RegTypeWidth-1:0
 typedef enum logic[`RegType] {
-	TYPE_NONE	= `RegTypeWidth'b000,
-	TYPE_GPR	= `RegTypeWidth'b001,
-	TYPE_FPR	= `RegTypeWidth'b010,
-	TYPE_BYPASS	= `RegTypeWidth'b011,	// Bypass Register (Must be renamed)
-	TYPE_IMM	= `RegTypeWidth'b100,	// Immediate
-	TYPE_PC		= `RegTypeWidth'b101,	// use program counter
-	TYPE_ROB	= `RegTypeWidth'b110	// Rob-based Rename Register
+	TYPE_NONE	= 'b000,
+	TYPE_GPR	= 'b001,
+	TYPE_FPR	= 'b010,
+	TYPE_BYPASS	= 'b011,	// Bypass Register (Must be renamed)
+	TYPE_IMM	= 'b100,	// Immediate
+	TYPE_PC		= 'b101,	// use program counter
+	TYPE_ROB	= 'b110		// Rob-based Rename Register
 } RegType_t;
 
 typedef struct packed {

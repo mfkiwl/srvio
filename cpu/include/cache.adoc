@@ -1,0 +1,22 @@
+= cache.svh
+Configurations and utilities for caches
+
+[[Cache-Type]]
+== CacheType_t (Enumenration for cache type)
+PHYS:: Physical Cache
+PIPT:: Physically Indexed Physically Tagged (Virtual Cache)
+VIPT:: Virtually Indexed Physically Tagged (Virtual Cache)
+
+[[Cache-Configuration]]
+== CacheConfig_t (Struct for cache configuration)
+cache:: cache type (<<Cache-Type>,<CacheType_t>>)
+depth:: depth of cache ram
+way:: number of ways in the cache
+bank:: number of cache ram banks in the cache
+delay:: cache access latency
+
+[[Cache-Config-Class]]
+== CacheConfig (Cache configuration automation class)
+get_param:: return cache configuration parameter 
+	(<<Cache-Configuration>,<CacheConfig_t>>) 
+get_depth:: return cache ram depth

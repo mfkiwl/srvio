@@ -63,7 +63,7 @@ module br_status_test;
 	wire						wb_flush_;
 	// commit
 	reg							commit_e_;
-	reg [ROB-1:0]				com_rob_id;
+	reg [ROB-1:0]				commit_rob_id;
 	wire						br_result;
 	wire						br_pred_miss_;
 	wire						jump_miss_;
@@ -125,7 +125,7 @@ module br_status_test;
 	//*** clear all value related to commit 
 	task clear_commit;
 		commit_e_ = `Disable_;
-		com_rob_id = 0;
+		commit_rob_id = 0;
 	endtask
 
 
@@ -318,7 +318,7 @@ module br_status_test;
 		wb_tar_addr = 0; 
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h1; 
+		commit_rob_id = 'h1; 
 		check_com_status(`Enable, `BrTaken, `Disable_, `Disable_, 0);
 		#(STEP);
 
@@ -365,7 +365,7 @@ module br_status_test;
 		wb_tar_addr = 0; 
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h1; 
+		commit_rob_id = 'h1; 
 		check_com_status(`Enable, `BrNTaken, `Enable_, `Disable_, 0);
 		#(STEP);
 
@@ -419,7 +419,7 @@ module br_status_test;
 		wb_tar_addr = 0;
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h2; 
+		commit_rob_id = 'h2; 
 		check_com_status(`Enable, `BrTaken, `Disable_, `Disable_, 0);
 		#(STEP);
 
@@ -473,7 +473,7 @@ module br_status_test;
 		wb_tar_addr = 0;
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h9; 
+		commit_rob_id = 'h9; 
 		check_com_status(`Enable, `BrNTaken, `Disable_, `Disable_, 0);
 		#(STEP*4);
 
@@ -520,7 +520,7 @@ module br_status_test;
 		wb_tar_addr = 'h2000;
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h5; 
+		commit_rob_id = 'h5; 
 		check_com_status(`Disable, `BrTaken, `Disable_, `Disable_, 'h2000);
 		#(STEP*2);
 
@@ -579,7 +579,7 @@ module br_status_test;
 		wb_tar_addr = 'h1_0000;
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h5; 
+		commit_rob_id = 'h5; 
 		check_com_status(`Disable, `BrTaken, `Disable_, `Enable_, 'h1_0000);
 		#(STEP*2);
 
@@ -647,7 +647,7 @@ module br_status_test;
 		wb_tar_addr = 'h1_0000;
 		#(STEP);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h5; 
+		commit_rob_id = 'h5; 
 		check_com_status(`Disable, `BrTaken, `Disable_, `Enable_, 'h1_0000);
 		#(STEP*4);
 
@@ -758,7 +758,7 @@ module br_status_test;
 		wb_tar_addr = 'h1_5000;
 		#(STEP*3);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h1; 
+		commit_rob_id = 'h1; 
 		check_com_status(`Disable, `BrTaken, `Disable_, `Enable_, 'h1_0000);
 		#(STEP*4);
 
@@ -869,7 +869,7 @@ module br_status_test;
 		wb_tar_addr = 'h1_0000;
 		#(STEP*3);
 		commit_e_ = `Enable_;
-		com_rob_id = 'h1; 
+		commit_rob_id = 'h1; 
 		check_com_status(`Disable, `BrTaken, `Disable_, `Enable_, 'h1_0000);
 		#(STEP*5);
 

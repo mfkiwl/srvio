@@ -10,6 +10,7 @@
 `ifndef _RV_OPCODES_SVH_INCLUDED_
 `define _RV_OPCODES_SVH_INCLUDED_
 
+`include "cpu_config.svh"
 
 //***** basic parameters
 `define RvOpW				7			// opcode width
@@ -147,101 +148,101 @@ typedef struct packed {
 
 
 //***** Opcodes
-`define RvOpLoad			`RvOpW'b0000011
-`define RvOpStore			`RvOpW'b0100011
-`define RvOpMadd			`RvOpW'b1000011
-`define RvOpBranch			`RvOpW'b1100011
+`define RvOpLoad			'b000_0011
+`define RvOpStore			'b010_0011
+`define RvOpMadd			'b100_0011
+`define RvOpBranch			'b110_0011
 
-`define RvOpLoadFP			`RvOpW'b0000111
-`define RvOpStoreFP			`RvOpW'b0100111 
-`define RvOpMsub			`RvOpW'b1000111
-`define RvOpJalr			`RvOpW'b1100111
+`define RvOpLoadFP			'b000_0111
+`define RvOpStoreFP			'b010_0111 
+`define RvOpMsub			'b100_0111
+`define RvOpJalr			'b110_0111
 
-`define RvOpCustom0			`RvOpW'b0001011
-`define RvOpCustom1			`RvOpW'b0101011
-`define RvOpNmsub			`RvOpW'b1001011
+`define RvOpCustom0			'b000_1011
+`define RvOpCustom1			'b010_1011
+`define RvOpNmsub			'b100_1011
 // 7'b1101011 is reserved
 
-`define RvOpMiscMem			`RvOpW'b0001111
-`define RvOpAmo				`RvOpW'b0101111
-`define RvOpNmadd			`RvOpW'b1001111
-`define RvOpJal				`RvOpW'b1101111
+`define RvOpMiscMem			'b000_1111
+`define RvOpAmo				'b010_1111
+`define RvOpNmadd			'b100_1111
+`define RvOpJal				'b110_1111
 
-`define RvOpImm				`RvOpW'b0010011
-`define RvOpR				`RvOpW'b0110011
-`define RvOpFP				`RvOpW'b1010011
-`define RvOpSystem			`RvOpW'b1110011
+`define RvOpImm				'b001_0011
+`define RvOpR				'b011_0011
+`define RvOpFP				'b101_0011
+`define RvOpSystem			'b111_0011
 
-`define RvOpAuipc			`RvOpW'b0010111
-`define RvOpLui				`RvOpW'b0110111
+`define RvOpAuipc			'b001_0111
+`define RvOpLui				'b011_0111
 // 7'b1010111 is reserved
 // 7'b1110111 is reserved
 
 // 7'b0011011 is RV64-specific
 // 7'b0111011 is RV64-specific
-`define RvOpCustom2			`RvOpW'b1011011
-`define RvOpCustom3 		`RvOpW'b1111011
+`define RvOpCustom2			'b101_1011
+`define RvOpCustom3 		'b111_1011
 
 
 //***** Function Code
-`define RvFunct3AddSub		`RvFunct3W'b000		// 0
-`define RvFunct3Sll			`RvFunct3W'b001		// 1
-`define RvFunct3Slt			`RvFunct3W'b010		// 2
-`define RvFunct3Sltu		`RvFunct3W'b011		// 3
-`define RvFunct3Xor			`RvFunct3W'b100		// 4
-`define RvFunct3SraSrl		`RvFunct3W'b101		// 5
-`define RvFunct3Or			`RvFunct3W'b110		// 6
-`define RvFunct3And			`RvFunct3W'b111		// 7
-`define RvFunct7Add			`RvFunct7W'b0000000	// add
-`define RvFunct7Sub			`RvFunct7W'b0100000	// sub
-`define RvFunct7Srl			`RvFunct7W'b0000000	// srl, sll (32bit)
-`define RvFunct7Sra			`RvFunct7W'b0100000	// sra (32bit)
+`define RvFunct3AddSub		'b000		// 0
+`define RvFunct3Sll			'b001		// 1
+`define RvFunct3Slt			'b010		// 2
+`define RvFunct3Sltu		'b011		// 3
+`define RvFunct3Xor			'b100		// 4
+`define RvFunct3SraSrl		'b101		// 5
+`define RvFunct3Or			'b110		// 6
+`define RvFunct3And			'b111		// 7
+`define RvFunct7Add			'b000_0000	// add
+`define RvFunct7Sub			'b010_0000	// sub
+`define RvFunct7Srl			'b000_0000	// srl, sll (32bit)
+`define RvFunct7Sra			'b010_0000	// sra (32bit)
 
 //*** Branch Funct3
-`define RvFunct3Beq			`RvFunct3W'b000		// 0
-`define RvFunct3Bne			`RvFunct3W'b001		// 1
-`define RvFunct3Blt			`RvFunct3W'b100		// 4
-`define RvFunct3Bge			`RvFunct3W'b101		// 5
-`define RvFunct3Bltu		`RvFunct3W'b110		// 6
-`define RvFunct3Bgeu 		`RvFunct3W'b111		// 7
+`define RvFunct3Beq			'b000		// 0
+`define RvFunct3Bne			'b001		// 1
+`define RvFunct3Blt			'b100		// 4
+`define RvFunct3Bge			'b101		// 5
+`define RvFunct3Bltu		'b110		// 6
+`define RvFunct3Bgeu 		'b111		// 7
 
 //*** Load/Store Funct3
-`define RvFunct3Byte		`RvFunct3W'b000	// load/store byte
-`define RvFunct3Half		`RvFunct3W'b001	// load/store half
-`define RvFunct3Word		`RvFunct3W'b010	// load/store word
-`define RvFunct3Double		`RvFunct3W'b011 // load/store double
-`define RvFunct3Ubyte		`RvFunct3W'b100	// load byte unsigned
-`define RvFunct3Uhalf		`RvFunct3W'b101	// load half unsigned
-`define RvFunct3Uword		`RvFunct3W'b110 // load word unsigned
+`define RvFunct3Byte		'b000	// load/store byte
+`define RvFunct3Half		'b001	// load/store half
+`define RvFunct3Word		'b010	// load/store word
+`define RvFunct3Double		'b011 // load/store double
+`define RvFunct3Ubyte		'b100	// load byte unsigned
+`define RvFunct3Uhalf		'b101	// load half unsigned
+`define RvFunct3Uword		'b110 // load word unsigned
 
 //*** Misc memory funct3
-`define RvFunct3Fence		`RvFunct3W'b000		// 0
-`define RvFunct3Fence_I		`RvFunct3W'b001		// 1
+`define RvFunct3Fence		'b000		// 0
+`define RvFunct3Fence_I		'b001		// 1
 
 //*** system funct3
-`define RvFunct3Priv		`RV_FUNCT3W'b000		// 0
-`define RvFunct3Csrrw		`RV_FUNCT3W'b001		// 1
-`define RvFunct3Csrrs		`RV_FUNCT3W'b010		// 2
-`define RvFunct3Csrrc		`RV_FUNCT3W'b011		// 3
-`define RvFunct3Csrrwi		`RV_FUNCT3W'b101		// 5
-`define RvFunct3Csrrsi 		`RV_FUNCT3W'b110		// 6
-`define RvFunct3Csrrci 		`RV_FUNCT3W'b111		// 7
+`define RvFunct3Priv		'b000		// 0
+`define RvFunct3Csrrw		'b001		// 1
+`define RvFunct3Csrrs		'b010		// 2
+`define RvFunct3Csrrc		'b011		// 3
+`define RvFunct3Csrrwi		'b101		// 5
+`define RvFunct3Csrrsi 		'b110		// 6
+`define RvFunct3Csrrci 		'b111		// 7
 
 //*** private funct12
-`define RvFunct12Ecall		`RvFunct12W'b000000000000
-`define RvFunct12Ebreak		`RvFunct12W'b000000000001
-`define RvFunct12Eret		`RvFunct12W'b000100000000
-`define RvFunct12Wfi		`RvFunct12W'b000100000010
+`define RvFunct12Ecall		'b0000_0000_0000
+`define RvFunct12Ebreak		'b0000_0000_0001
+`define RvFunct12Eret		'b0001_0000_0000
+`define RvFunct12Wfi		'b0001_0000_0010
 
 //*** mult and div funct3
-`define RvFunct7MulDiv		`RvFunct7W'h0000001
-`define RvFunct3Mul			`RvFunct3W'b000
-`define RvFunct3Mulh		`RvFunct3W'b001
-`define RvFunct3Mulhsu		`RvFunct3W'b010
-`define RvFunct3Mulhu		`RvFunct3W'b011
-`define RvFunct3Div			`RvFunct3W'b100
-`define RvFunct3Divu		`RvFunct3W'b101
-`define RvFunct3Rem			`RvFunct3W'b110
-`define RvFunct3Remu		`RvFunct3W'b111
+`define RvFunct7MulDiv		'h000_0001
+`define RvFunct3Mul			'b000
+`define RvFunct3Mulh		'b001
+`define RvFunct3Mulhsu		'b010
+`define RvFunct3Mulhu		'b011
+`define RvFunct3Div			'b100
+`define RvFunct3Divu		'b101
+`define RvFunct3Rem			'b110
+`define RvFunct3Remu		'b111
 
 `endif //_RV_OPCODES_SVH_INCLUDED_

@@ -17,30 +17,30 @@
 
 /***** Exception Code List ( Interrupt in mcause is 1'b0 ) *****/
 typedef enum logic[`ExpCode] {
-	EXP_I_MISS_ALIGN	= `ExpCodeWidth'b0_0000,	// Instruction Miss align
-	EXP_I_FAULT			= `ExpCodeWidth'b0_0001,	// Instruction Access Fault
-	EXP_I_ILLEGAL		= `ExpCodeWidth'b0_0010,	// Illegal Instruction
-	EXP_BREAK			= `ExpCodeWidth'b0_0011,	// Breakpoint Exception
-	EXP_D_MISS_ALIGN	= `ExpCodeWidth'b0_0100,	// Load Miss Align
-	EXP_D_FAULT			= `ExpCodeWidth'b0_0101,	// Load Access Fault
-	EXP_AMO_MISS_ALIGN	= `ExpCodeWidth'b0_0110,	// store/AMO miss align
-	EXP_AMO_FAULT		= `ExpCodeWidth'b0_0111,	// store/AMO Access Fault
-	EXP_USER_ENV_CALL	= `ExpCodeWidth'b0_1000,	// User Environment Call
-	EXP_SV_ENV_CALL		= `ExpCodeWidth'b0_1001,	// Supervisor Environment Call
-//	EXP_				= `ExpCodeWidth'b0_1010,	// Reserved
-	EXP_MAC_ENV_CALL	= `ExpCodeWidth'b0_1011,	// Machine Environment Call
-	EXP_I_PAGE_FAULT	= `ExpCodeWidth'b0_1100,	// Instruction Page Fault
-	EXP_D_PAGE_FAULT	= `ExpCodeWidth'b0_1101,	// Load (Data) Page Fault
-//	EXP_				= `ExpCodeWidth'b0_1110,	// Reserved
-	EXP_AMO_PAGE_FAULT	= `ExpCodeWidth'b0_1111		// Store/AMO Page Fault
-//	EXP_				= `ExpCodeWidth'b1_0000-	// Reserved
+	EXP_I_MISS_ALIGN	= 'b0_0000,	// Instruction Miss align
+	EXP_I_FAULT			= 'b0_0001,	// Instruction Access Fault
+	EXP_I_ILLEGAL		= 'b0_0010,	// Illegal Instruction
+	EXP_BREAK			= 'b0_0011,	// Breakpoint Exception
+	EXP_D_MISS_ALIGN	= 'b0_0100,	// Load Miss Align
+	EXP_D_FAULT			= 'b0_0101,	// Load Access Fault
+	EXP_AMO_MISS_ALIGN	= 'b0_0110,	// store/AMO miss align
+	EXP_AMO_FAULT		= 'b0_0111,	// store/AMO Access Fault
+	EXP_USER_ENV_CALL	= 'b0_1000,	// User Environment Call
+	EXP_SV_ENV_CALL		= 'b0_1001,	// Supervisor Environment Call
+//	EXP_				= 'b0_1010,	// Reserved
+	EXP_MAC_ENV_CALL	= 'b0_1011,	// Machine Environment Call
+	EXP_I_PAGE_FAULT	= 'b0_1100,	// Instruction Page Fault
+	EXP_D_PAGE_FAULT	= 'b0_1101,	// Load (Data) Page Fault
+//	EXP_				= 'b0_1110,	// Reserved
+	EXP_AMO_PAGE_FAULT	= 'b0_1111	// Store/AMO Page Fault
+//	EXP_				= 'b1_0000-	// Reserved
 } ExpCode_t;
 
 
 /***** Interrupt Code Parameter ( Interrupt in mcause is 1'b1 ) *****/
 typedef enum logic[`ExpCode] {
-	USER_SOFT_INT	= `ExpCodeWidth'b0_0000,
-	SV_SOFT_INT		= `ExpCodeWidth'b0_0001
+	USER_SOFT_INT	= 'b0_0000,
+	SV_SOFT_INT		= 'b0_0001
 } IntCode_t;
 /***** Interrupt Code List *****/
 //TODO: fill

@@ -49,6 +49,7 @@ module reorder_buffer_test;
 	reg				wb_pred_miss_;
 	reg				wb_jump_miss_;
 
+	wire			dec_rob_br_;
 	wire [ROB-1:0]	dec_rob_id;
 	RegFile_t		ren_rs1;
 	wire			ren_rs1_ready;
@@ -202,7 +203,7 @@ module reorder_buffer_test;
 		dec_rd = '{regtype: TYPE_NONE, addr: 0};
 		dec_rs1 = '{regtype: TYPE_GPR, addr: 1};
 		dec_rs2 = '{regtype: TYPE_GPR, addr: 3};
-		dec_br_ = `Disable_;
+		dec_br_ = `Enable_;
 		dec_br_pred = `Disable;
 		dec_jump_ = `Disable_;
 		dec_invalid = `Disable;
