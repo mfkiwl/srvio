@@ -1,0 +1,2 @@
+= Documentation system
+memo: requires svinst to be installed.

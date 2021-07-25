@@ -1,0 +1,45 @@
+# directory to be skipped on parsing
+skip:
+    - .git
+    - .vim-verilog
+    - bkp
+    - org
+    - test
+    - gomi
+    - doc
+    - isa
+    - soft
+    - tools
+    - vim
+    - sv2v
+
+# Verilog extension
+verilog:
+    - .v
+    - .vh
+verilog-src:
+    - .v
+verilog-header:
+    - .vh
+
+systemverilog:
+    - .sv
+    - .svh
+systemverilog-src:
+    - .sv
+systemverilog-header:
+    - .svh
+
+# software
+c:
+    - .c
+    - .h
+python:
+    - .py
+yaml:
+    - .yaml
+    - .yml
+perl:
+    - .pl
+shell:
+    - .sh
