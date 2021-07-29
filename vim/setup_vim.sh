@@ -152,7 +152,7 @@ if ( $setup_design =~ 1 ) then
 	foreach src_file ( $src_files $inc_files )
 		set file_name = `basename -s .sv $src_file`
 		set file_name = `basename -s .v $file_name`
-		set file_name = `basename -s .svh $src_file`
+		set file_name = `basename -s .svh $file_name`
 		set file_name = `basename -s .vh $file_name`
 		foreach ext ($verilog_src_ext $verilog_header_ext)
 			set file_name = `basename -s .$ext $file_name`
