@@ -1,3 +1,6 @@
 [submodule "pm"]
 	path = pm
 	url = https://github.com/yosukeIDE/ParamMod.git
+[submodule "cpu/cpu/fputil"]
+	path = cpu/cpu/fputil
+	url = git@github.com:yosukeIDE/fputil.git
