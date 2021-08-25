@@ -7,3 +7,6 @@
 [submodule "cpu/fputil"]
 	path = cpu/fputil
 	url = git@github.com:yosukeIDE/fputil.git
+[submodule "cpu/ip/gznk"]
+	path = cpu/ip/gznk
+	url = git@github.com:yosukeIDE/datapath.git
