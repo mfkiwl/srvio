@@ -15,7 +15,7 @@ def parser():
     description = 'Parse verilog/systemverilog source files' + \
         'to construct design hierarchy read on database creation'
     usage = 'usage: python3 {} ' .format(__file__)
-    usage += '[-o outfile]'
+    usage += '[-o] [-c] [-i] [-d] [-p] [-t]'
     parse = ArgumentParser(
                 prog=prog,
                 description=description, 
@@ -63,16 +63,6 @@ def parser():
                 help='Set directory structure configuration (Default: dir.yaml)'
                 )
 
-    # Preprocessed file output directory
-    parse.add_argument(
-                '-p',
-                '--preproc_dir',
-                type=str,
-                action='store',
-                default='preproc',
-                help='Set '
-            )
-
     # Dump target directory of module dependency files (yaml)
     parse.add_argument(
                 '-t',
@@ -86,38 +76,13 @@ def parser():
 
 
 
-def v_preproc(file_list, target, inc_list) :
-    # Arguments
-    #   file_list: list of verilog files to be preprocessed
-    #   target: output directory of preprocessed verilog
-    #   inc_list: list of directory contains include files
-
-    inc_opt = []
-    for dirs in inc_list :
-        inc_opt.append('+incdir+' + dirs)
-
-    # preprocess each file in file_list
-    for f in file_list :
-        path = str(f.absolute())
-        out_file_name = target + '/' + f.name
-        print('preprocessing ' + path)
-
-        try:
-            out_file = open(out_file_name, 'w')
-            # execute vppreproc (verilog preprocessor)
-            #   vppreproc +incdir+X ... +incdir+XXXX design.sv
-            subprocess.run(['vppreproc'] + inc_opt + [path], stdout=out_file)
-        except subprocess.CalledProcessError:
-            print('Failed execution of vppreproc', file=sys.stderr)
-            sys.exit(1)
-
-
-
 def v_check(file_list, target, inc_conf_file) :
     # Arguments
-    #   file_list: list of verilog files to be preprocessed
+    #   file_list: list of verilog files to be parsed
     #   target: output directory of yaml
     #   inc_conf_file: yaml file for include directory structures (incdir.yml)
+
+    proc_list = []
 
     for f in file_list :
         path = str(f.absolute())
@@ -126,13 +91,18 @@ def v_check(file_list, target, inc_conf_file) :
             # Execute perl scripts to extract submodules in each design and output yaml.
             #   perl ./scripts/v_check.pl -t ./yaml/design \
             #       -d design.sv -i ./yaml/incdir.yml
-            #subprocess.Popen(['perl', './scripts/v_check.pl', '-t', target,
-            subprocess.run(['perl', './scripts/v_check.pl', '-t', target,
-                    '-i', inc_conf_file, '-d', path])
+            cmd = ['perl', './scripts/v_check.pl']
+            cmd += ['-t', target]
+            cmd += ['-i', inc_conf_file]
+            cmd += ['-d', path]
+            proc_list.append(subprocess.Popen(cmd))
         except subprocess.CalledProcessError:
             print('Failed execution of v_check.pl', file=sys.stderr)
             sys.exit(1)
 
+    # wait all of subprocess finishes
+    for p in proc_list :
+        p.wait()
 
 
 if __name__ == '__main__' :
@@ -142,7 +112,6 @@ if __name__ == '__main__' :
     dir_conf_file = options.dir
     inc_conf_file = options.incdir
     out_file = options.output
-    preproc_dir = options.preproc_dir
     target = options.target
 
     # file parse configuration
@@ -155,9 +124,6 @@ if __name__ == '__main__' :
     rtl_ext = config['verilog-src'] + config['systemverilog-src']
     file_list = file_search.listup_files(top_dir, rtl_ext, dir_config)
     inc_list = file_search.listup_dirs(top_dir, inc_config)
-
-    # Preprocess verilog file. (Remove comment out if you want!)
-    #v_preproc(file_list, preproc_dir, inc_list)
 
     # Extract submodules in each design
     v_check(file_list, target, inc_conf_file)
