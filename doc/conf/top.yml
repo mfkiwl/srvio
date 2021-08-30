@@ -1,0 +1,6 @@
+# Top design to export hierarchy
+- pseudo_ic
+- fetch_top
+- decode_top
+- issue_top
+- exe_top

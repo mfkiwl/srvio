@@ -46,14 +46,10 @@ foreach my $incdir ( &construct_tree($top_dir, $inc) ) {
 }
 
 # verilog parsing
-my $v_info = &init_v_parse($opt_design, @inc_arg);
+my $preproc = &verilog_preproc($opt_design, @inc_arg);
 
-# make files by module
-my @modules = $v_info->top_modules_sorted;
-foreach my $mod (@modules) {
-	&dump_yaml($mod, $opt_target);
-}
-
+open(out_file, "> tmp.v") or die("Error:$!");
+print out_file $preproc->getall();
 
 
 ##### directory tree construction
@@ -77,7 +73,7 @@ sub construct_tree {
 
 
 ##### Verilog parsing
-sub init_v_parse {
+sub verilog_preproc {
 	my ($in_file, @inc_arg) = @_;
 	my $opt = new Verilog::Getopt;
 	$opt->parameter(@inc_arg);
@@ -85,45 +81,5 @@ sub init_v_parse {
 	my $vp = Verilog::Preproc->new(options=>$opt);
 	$vp->open(filename=>$in_file);
 
-	my $nl = new Verilog::Netlist(options => $opt);
-	$nl->read_file(filename=>$in_file);
-
-
-	return $nl;
-}
-
-
-
-##### Convert into hash and dump yaml file
-sub dump_yaml {
-	my ($module, $target) = @_;
-
-	# cell instance lists to hash
-	#	"instance name : object"
-	my %hash;
-	my $modname = $module->name;
-	if ( $modname eq '$root' ) {
-		return;
-	}
-
-	foreach my $cell ($module->cells_sorted) {
-		my $cell_name = $cell->name;
-		my $cell_submodule = $cell->submodname;
-		$hash{$cell_name} = $cell_submodule;
-	}
-
-	# open files
-	my $file = $target . "/" . $modname . ".yml";
-	open(OUT, ">", $file) or die("cannot ope file: ", $file, "\n");
-
-	# dump yaml
-	print OUT YAML::Dump(\%hash);
-
-	# close file
-	close(OUT);
-
-	# dump cell names
-	#foreach my $cell ($module->cells_sorted) {
-	#	printf("module: %s (%s)\n", $cell->name, $cell->submodname);
-	#}
+	return $vp;
 }

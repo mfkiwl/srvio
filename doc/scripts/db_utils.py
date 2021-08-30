@@ -37,6 +37,17 @@ def create_table(c, table_name, keys) :
         return True
 
 
+# dump all entries in table
+def dump_table(c, table_name) :
+    # Argument
+    #   c: sqlite3 cursor
+    #   table_name: name of newly created table
+    # Return
+    #   table entries of given table name
+    return c.execute('SELECT * from ' + table_name).fetchall()
+
+
+
 # search for entry where entry[key] == value
 def check_db(c, table_name, key, value) :
     # Argument
@@ -55,6 +66,22 @@ def check_db(c, table_name, key, value) :
         return False
 
 
+
+# search for entry
+def lookup_db(c, table_name, key, value) :
+    # Argument
+    #   c: sqlite3 cursor
+    #   table_name: name of newly created table
+    #   key: one of the keys of the search target
+    #   value: value of the target
+    # Return
+    #   return matched entries
+    c.execute('SELECT * FROM ' + table_name +
+            ' where ' + key + '=\"' + value + '\"')
+    return c.fetchall()
+
+
+
 # register new entry into table
 def register_db(c, table_name, keys, values) :
     # Argument
@@ -67,6 +94,26 @@ def register_db(c, table_name, keys, values) :
     #       If you add entry with id = 1 and name = abcd,
     #       values will be '1, \'abcd\'' 
     #       (escape with \ is necessary for string value)
-    command = 'INSERT INTO ' + table_name + '(' + keys + ') '
+    command = 'INSERT INTO ' + table_name + '(' 
+    command += keys + ') '
     command += 'values(' + values + ')'
+    c.execute(command)
+
+
+
+# update table entry
+def update_db(c, table_name, key, value, target_key, target_value) :
+    # Argument
+    #   c: sqlite3 cursor
+    #   table_name: name of newly created table
+    #   key: one of the keys of the search target
+    #   value: value of the target
+    #   target_key: entry key of update target
+    #   target_value: updata value of given entry
+    # Return
+    #   True: Target found
+    #   False: Target not found
+    command = 'UPDATE ' + table_name + ' '
+    command += 'set ' + key + ' = ' + value + ' '
+    command += 'where ' + target_key + ' = ' + target_value
     c.execute(command)

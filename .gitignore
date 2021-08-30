@@ -5,7 +5,14 @@ tags
 xmverilog.log
 xmverilog.history
 
+# ignore vim setup files
+*.vim-verilog/
+
+# ignore python cache
+*__pycache__/
+
 # ignore backup
+*tmp/
 *bkp/
 *waves.shm/
 *xcelium.d/
