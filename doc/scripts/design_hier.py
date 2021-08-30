@@ -10,9 +10,8 @@ import db_utils
 
 def parser():
     # parser information setup
-    prog='parse_design'
-    description = 'Parse verilog/systemverilog source files' + \
-        'to construct design hierarchy read on database creation'
+    prog='design_hier'
+    description = 'Construct design hierarchy'
     usage = 'usage: python3 {} ' .format(__file__)
     usage += '[-o outfile]'
     parse = ArgumentParser(
